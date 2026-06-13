@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>安静书数学乐园</title>
+    <style>
+      * { box-sizing: border-box; }
+      :root {
+        --ink: #2b241a;
+        --muted: #6c5a45;
+        --paper: #fffaf0;
+        --page: #fffdf7;
+        --yellow: #ffd76a;
+        --green: #bfe8cf;
+        --orange: #ffbd82;
+        --purple: #d8c7ff;
+        --blue: #bfe2f7;
+        --pink: #ffd3dc;
+      }
+      body {
+        margin: 0;
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 8%, rgba(255, 215, 106, .36), transparent 24%),
+          radial-gradient(circle at 86% 12%, rgba(191, 232, 207, .42), transparent 22%),
+          #f4eee2;
+      }
+      button, input { font: inherit; }
+      main {
+        width: min(1180px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 28px 0 44px;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: end;
+        margin-bottom: 20px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 60px);
+        line-height: 1.08;
+        text-wrap: balance;
+      }
+      .subtitle {
+        margin: 12px 0 0;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+      .reward-book {
+        min-width: 190px;
+        padding: 14px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: var(--paper);
+        box-shadow: 7px 7px 0 rgba(43, 36, 26, .14);
+      }
+      .reward-book strong {
+        display: block;
+        font-size: 18px;
+      }
+      .sticker-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .sticker {
+        min-width: 44px;
+        min-height: 36px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: white;
+        font-size: 14px;
+        font-weight: 900;
+      }
+      .book-shell {
+        border: 5px solid var(--ink);
+        border-radius: 28px;
+        background: var(--paper);
+        overflow: hidden;
+        box-shadow: 12px 12px 0 rgba(43, 36, 26, .16);
+      }
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        border-bottom: 5px solid var(--ink);
+      }
+      .tab {
+        min-height: 70px;
+        padding: 8px;
+        border: 0;
+        border-right: 3px solid var(--ink);
+        color: var(--ink);
+        background: white;
+        font-size: 17px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .tab:last-child { border-right: 0; }
+      .tab:nth-child(1) { background: var(--yellow); }
+      .tab:nth-child(2) { background: var(--green); }
+      .tab:nth-child(3) { background: var(--orange); }
+      .tab:nth-child(4) { background: var(--blue); }
+      .tab:nth-child(5) { background: var(--purple); }
+      .tab:nth-child(6) { background: #fff1b8; }
+      .tab:nth-child(7) { background: var(--pink); }
+      .tab.active {
+        box-shadow: inset 0 -8px 0 white;
+      }
+      .page {
+        display: none;
+        min-height: 640px;
+        padding: 26px;
+        background: var(--page);
+      }
+      .page.active { display: block; }
+      .label {
+        display: inline-flex;
+        padding: 8px 14px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: var(--yellow);
+        font-size: 17px;
+        font-weight: 900;
+      }
+      .page-title {
+        margin: 16px 0 8px;
+        font-size: clamp(28px, 4vw, 44px);
+        line-height: 1.14;
+      }
+      .intro {
+        margin: 0 0 20px;
+        max-width: 780px;
+        color: var(--muted);
+        font-size: 19px;
+        font-weight: 800;
+        line-height: 1.55;
+      }
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+      }
+      .module-card {
+        min-height: 168px;
+        padding: 16px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        box-shadow: 6px 6px 0 rgba(43, 36, 26, .12);
+      }
+      .module-card h3 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+      .module-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.45;
+      }
+      .quiet-board {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .panel {
+        min-height: 260px;
+        padding: 18px;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background: white;
+      }
+      .panel h3 {
+        margin: 0 0 14px;
+        font-size: 26px;
+        text-align: center;
+      }
+      .question-card {
+        margin-bottom: 16px;
+        padding: 16px;
+        border: 4px solid var(--ink);
+        border-radius: 20px;
+        background: white;
+        text-align: center;
+        font-size: 34px;
+        font-weight: 900;
+      }
+      .stick-zone {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        min-height: 160px;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .ten-group {
+        position: relative;
+        width: 112px;
+        height: 150px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        align-items: end;
+        justify-items: center;
+        gap: 6px 4px;
+        padding: 8px;
+        border: 3px dashed #b99d73;
+        border-radius: 18px;
+        background: #fff8df;
+      }
+      .ten-group::after {
+        content: "10根";
+        position: absolute;
+        left: 50%;
+        bottom: -18px;
+        transform: translateX(-50%);
+        padding: 2px 8px;
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+        background: white;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .mini-stick, .stick {
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fff8d9, #f0ca72);
+      }
+      .mini-stick { width: 12px; height: 56px; }
+      .stick { width: 24px; height: 118px; }
+      .action {
+        width: 100%;
+        min-height: 62px;
+        margin-top: 14px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: var(--yellow);
+        color: var(--ink);
+        font-size: 18px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .result {
+        margin-top: 14px;
+        padding: 12px;
+        border: 3px dashed #9b7046;
+        border-radius: 16px;
+        background: #fff6d9;
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.45;
+      }
+      .box-scene {
+        min-height: 300px;
+        position: relative;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background: linear-gradient(180deg, #dff4f0 0 52%, #e9d6a8 52%);
+        overflow: hidden;
+      }
+      .toy-box {
+        position: absolute;
+        left: 50%;
+        bottom: 64px;
+        width: 220px;
+        height: 120px;
+        transform: translateX(-50%);
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: #c9a0ff;
+      }
+      .lid {
+        position: absolute;
+        left: 50%;
+        bottom: 170px;
+        width: 190px;
+        min-height: 58px;
+        display: grid;
+        place-items: center;
+        transform: translateX(-50%) rotate(-7deg);
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: var(--yellow);
+        font-size: 20px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .outside-dots {
+        position: absolute;
+        right: 70px;
+        bottom: 106px;
+        display: grid;
+        grid-template-columns: repeat(3, 42px);
+        gap: 12px;
+      }
+      .dot {
+        width: 42px;
+        height: 42px;
+        border: 4px solid var(--ink);
+        border-radius: 50%;
+        background: white;
+      }
+      .hidden-count {
+        display: none;
+        position: absolute;
+        left: 50%;
+        bottom: 92px;
+        transform: translateX(-50%);
+        padding: 10px 18px;
+        border: 4px solid var(--ink);
+        border-radius: 999px;
+        background: white;
+        font-size: 26px;
+        font-weight: 900;
+      }
+      .hidden-count.show { display: block; }
+      .group-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .moon, .shape {
+        width: 54px;
+        height: 54px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        background: #fff0b8;
+        font-size: 18px;
+        font-weight: 900;
+      }
+      .box {
+        min-height: 86px;
+        padding: 10px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: #e4f7eb;
+      }
+      .hundred-grid, .paint-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 5px;
+      }
+      .num-cell, .paint-cell {
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        background: white;
+        font-size: 16px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .num-cell.marked { background: var(--yellow); }
+      .paint-cell.color-a { background: var(--yellow); }
+      .paint-cell.color-b { background: var(--green); }
+      .paint-cell.color-c { background: var(--pink); }
+      .shape.triangle {
+        border-radius: 10px;
+        clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      }
+      .shape.square { border-radius: 12px; background: var(--blue); }
+      .shape.circle { background: var(--pink); }
+      .drag-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .drag-pile, .drop-zone {
+        min-height: 280px;
+        padding: 14px;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background: white;
+      }
+      .drag-pile h3, .drop-zone h3 {
+        margin: 0 0 12px;
+        font-size: 24px;
+        text-align: center;
+      }
+      .drag-items {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .drag-item {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: var(--yellow);
+        font-size: 20px;
+        font-weight: 900;
+        cursor: grab;
+        user-select: none;
+      }
+      .drag-item:active { cursor: grabbing; }
+      .drop-zone.over { background: #e4f7eb; }
+      .color-toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .color-tool {
+        min-height: 46px;
+        padding: 8px 14px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: white;
+        color: var(--ink);
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .color-tool.active { background: var(--yellow); }
+      .footer-note {
+        margin-top: 18px;
+        padding: 16px;
+        border: 3px dashed #9b7046;
+        border-radius: 18px;
+        background: #fff6d9;
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+      .paper-bank {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .paper-question {
+        padding: 14px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        box-shadow: 6px 6px 0 rgba(43, 36, 26, .12);
+      }
+      .paper-question img {
+        width: 100%;
+        aspect-ratio: 5 / 3;
+        object-fit: contain;
+        padding: 8px;
+        border: 3px dashed #c7b89e;
+        border-radius: 14px;
+        background: #fffaf0;
+      }
+      .paper-question h3 {
+        margin: 12px 0 8px;
+        font-size: 22px;
+      }
+      .paper-question p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.45;
+      }
+      .play-tag {
+        display: inline-flex;
+        margin-top: 10px;
+        padding: 7px 10px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: var(--yellow);
+        font-size: 15px;
+        font-weight: 900;
+      }
+      @media (max-width: 900px) {
+        .hero, .quiet-board, .drag-area { grid-template-columns: 1fr; }
+        .tabs { grid-template-columns: repeat(2, 1fr); }
+        .tab { border-bottom: 3px solid var(--ink); }
+      }
+      @media (max-width: 560px) {
+        main { width: min(100% - 18px, 1180px); }
+        .page { padding: 18px; }
+        .tabs { grid-template-columns: 1fr; }
+        .tab { border-right: 0; }
+        .hundred-grid, .paint-grid { gap: 3px; }
+        .num-cell, .paint-cell { font-size: 12px; border-radius: 6px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div>
+          <h1>安静书数学乐园</h1>
+          <p class="subtitle">翻一翻、拖一拖、涂一涂，和数字一起闯关。每完成一页，就收集一枚数学贴纸。</p>
+        </div>
+        <aside class="reward-book">
+          <strong>本节贴纸册</strong>
+          <div class="sticker-row">
+            <span class="sticker">小棒</span>
+            <span class="sticker">盒子</span>
+            <span class="sticker">涂色</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="book-shell">
+        <nav class="tabs" aria-label="安静书页面">
+          <button class="tab active" data-page="home" type="button">目录</button>
+          <button class="tab" data-page="sticks" type="button">小棒数位</button>
+          <button class="tab" data-page="hidden" type="button">遮挡盒子</button>
+          <button class="tab" data-page="grouping" type="button">装盒分组</button>
+          <button class="tab" data-page="hundred" type="button">百数表</button>
+          <button class="tab" data-page="drag" type="button">拖一拖</button>
+          <button class="tab" data-page="paint" type="button">涂色页</button>
+          <button class="tab" data-page="paper" type="button">挑战题</button>
+        </nav>
+
+        <section class="page active" id="page-home">
+          <span class="label">整本书结构</span>
+          <h2 class="page-title">一页一个小机关，先动手，再说算式</h2>
+          <p class="intro">每一页都有一个小任务。先看清楚，再动手操作，最后说出你的算式和答案。</p>
+          <div class="module-grid">
+            <article class="module-card" style="background:#fff1b8;">
+              <h3>小棒数位</h3>
+              <p>看几个十、几个一，练满十进一和退位拆十。</p>
+            </article>
+            <article class="module-card" style="background:#e4f7eb;">
+              <h3>遮挡盒子</h3>
+              <p>一共、外面、盒子里，翻开找隐藏部分。</p>
+            </article>
+            <article class="module-card" style="background:#ffe3d4;">
+              <h3>装盒分组</h3>
+              <p>每几个一盒，分一分，看看还剩几个。</p>
+            </article>
+            <article class="module-card" style="background:#dff0ff;">
+              <h3>百数表</h3>
+              <p>上下左右找数，建立加 10、减 10 的位置感。</p>
+            </article>
+            <article class="module-card" style="background:#eee7ff;">
+              <h3>图形统计</h3>
+              <p>数图形、分类、记录数量，练细心观察。</p>
+            </article>
+            <article class="module-card" style="background:#ffd3dc;">
+              <h3>拖一拖 / 涂色</h3>
+              <p>新增手感更强的拖拽和点格涂色，适合写写画画。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-sticks">
+          <span class="label">小棒数位屋</span>
+          <h2 class="page-title">36 + 8 = ?</h2>
+          <p class="intro">先看 36 是 3 个十和 6 个一，再把 8 根小棒放到个位。满 10 根就分成一组，放进十位。</p>
+          <div class="quiet-board">
+            <div class="panel">
+              <h3>十位小屋</h3>
+              <div class="stick-zone" id="quietTens"></div>
+            </div>
+            <div class="panel">
+              <h3>个位小屋</h3>
+              <div class="stick-zone" id="quietOnes"></div>
+            </div>
+          </div>
+          <button class="action" id="stickStep" type="button">演示一步</button>
+          <div class="result" id="stickResult">第 1 步：36 里面有 3 组十，6 根一。</div>
+        </section>
+
+        <section class="page" id="page-hidden">
+          <span class="label">遮挡盒子</span>
+          <h2 class="page-title">一共有 12 个，外面有 5 个，盒子里有几个？</h2>
+          <p class="intro">用“整体 - 外面 = 盒子里”理解部分和整体。点黄色盖子翻开答案。</p>
+          <div class="box-scene">
+            <div class="outside-dots">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="toy-box"></div>
+            <button class="lid" id="lidButton" type="button">点我翻开</button>
+            <div class="hidden-count" id="hiddenCount">盒子里 7 个</div>
+          </div>
+          <div class="result">想法：12 - 5 = 7，所以盒子里有 7 个。</div>
+        </section>
+
+        <section class="page" id="page-grouping">
+          <span class="label">装盒分组</span>
+          <h2 class="page-title">43 个小月饼，每 10 个装一盒</h2>
+          <p class="intro">先把 10 个分成一盒，再看看还剩几个。边分边数，答案就会自己跑出来。</p>
+          <div class="quiet-board">
+            <div class="panel">
+              <h3>月饼堆</h3>
+              <div class="group-row" id="moonPile"></div>
+            </div>
+            <div class="panel">
+              <h3>盒子</h3>
+              <div class="box">第 1 盒：10 个</div>
+              <div class="box" style="margin-top:10px;">第 2 盒：10 个</div>
+              <div class="box" style="margin-top:10px;">第 3 盒：10 个</div>
+              <div class="box" style="margin-top:10px;">第 4 盒：10 个</div>
+            </div>
+          </div>
+          <div class="result">43 个可以装满 4 盒，还剩 3 个。</div>
+        </section>
+
+        <section class="page" id="page-hundred">
+          <span class="label">百数表小路</span>
+          <h2 class="page-title">找到 24 的上下左右</h2>
+          <p class="intro">点击 24、14、34、23、25，帮助孩子理解上面少 10，下面多 10，左边少 1，右边多 1。</p>
+          <div class="panel">
+            <div class="hundred-grid" id="hundredGrid"></div>
+          </div>
+          <div class="result" id="hundredResult">已涂 0 个目标格。</div>
+        </section>
+
+        <section class="page" id="page-drag">
+          <span class="label">拖一拖</span>
+          <h2 class="page-title">把答案拖到正确的口袋</h2>
+          <p class="intro">适合做算式匹配、图形分类、数位组成。先做一个答案分类示范：把大于 10 的答案拖进右边口袋。</p>
+          <div class="drag-area">
+            <div class="drag-pile">
+              <h3>答案卡</h3>
+              <div class="drag-items" id="dragItems">
+                <div class="drag-item" draggable="true" data-value="8">8</div>
+                <div class="drag-item" draggable="true" data-value="11">11</div>
+                <div class="drag-item" draggable="true" data-value="14">14</div>
+                <div class="drag-item" draggable="true" data-value="9">9</div>
+                <div class="drag-item" draggable="true" data-value="16">16</div>
+              </div>
+            </div>
+            <div class="drop-zone" id="dropZone">
+              <h3>大于 10 的口袋</h3>
+              <div class="drag-items" id="dropItems"></div>
+            </div>
+          </div>
+          <div class="result" id="dragResult">拖入 11、14、16，就能得到分类贴纸。</div>
+        </section>
+
+        <section class="page" id="page-paint">
+          <span class="label">涂色页</span>
+          <h2 class="page-title">按要求给格子涂色</h2>
+          <p class="intro">适合百数表、规律题、图形统计、点子图。先点颜色，再点格子，像在书页上涂一涂。</p>
+          <div class="color-toolbar">
+            <button class="color-tool active" data-color="color-a" type="button">黄色：答案</button>
+            <button class="color-tool" data-color="color-b" type="button">绿色：线索</button>
+            <button class="color-tool" data-color="color-c" type="button">粉色：检查</button>
+            <button class="color-tool" data-color="" type="button">橡皮</button>
+          </div>
+          <div class="panel">
+            <div class="paint-grid" id="paintGrid"></div>
+          </div>
+          <div class="result" id="paintResult">任务：涂出 5 个黄色格子，表示 5 个答案点。</div>
+        </section>
+
+        <section class="page" id="page-paper">
+          <span class="label">小小挑战</span>
+          <h2 class="page-title">完成 4 道看图数学题</h2>
+          <p class="intro">先看图，再找数字；先说关系，再列算式。做完 4 题，就能收集一枚“看图小侦探”贴纸。</p>
+          <div class="paper-bank">
+            <article class="paper-question">
+              <img src="看图题素材/q01_36加8.png" alt="36加8小棒题" />
+              <h3>1. 小棒进位加法</h3>
+              <p>题目：看小棒算一算，36 + 8 = ? 答案是 44。</p>
+              <span class="play-tag">玩法：拖 8 根小棒，满十进一</span>
+            </article>
+            <article class="paper-question">
+              <img src="看图题素材/q02_32减6.png" alt="32减6小棒题" />
+              <h3>2. 小棒退位减法</h3>
+              <p>题目：看小棒算一算，32 - 6 = ? 答案是 26。</p>
+              <span class="play-tag">玩法：拆 1 组十，拿走 6 根</span>
+            </article>
+            <article class="paper-question">
+              <img src="看图题素材/q04_12遮挡.png" alt="12个玩具遮挡题" />
+              <h3>3. 遮挡盒子题</h3>
+              <p>题目：一共有 12 个，外面有 5 个，盒子里有几个？答案是 7 个。</p>
+              <span class="play-tag">玩法：翻开盒子，找隐藏数量</span>
+            </article>
+            <article class="paper-question">
+              <img src="看图题素材/q08_百数表.png" alt="百数表24上下左右" />
+              <h3>4. 百数表涂色</h3>
+              <p>题目：看 24 的上、下、左、右。上 14，下 34，左 23，右 25。</p>
+              <span class="play-tag">玩法：点格子涂出 5 个线索数</span>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
+    </main>
+
+    <script>
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const pages = Array.from(document.querySelectorAll(".page"));
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((item) => item.classList.remove("active"));
+          pages.forEach((page) => page.classList.remove("active"));
+          tab.classList.add("active");
+          document.querySelector(`#page-${tab.dataset.page}`).classList.add("active");
+        });
+      });
+
+      function makeTenGroup() {
+        const group = document.createElement("div");
+        group.className = "ten-group";
+        for (let i = 0; i < 10; i += 1) {
+          const stick = document.createElement("span");
+          stick.className = "mini-stick";
+          group.appendChild(stick);
+        }
+        return group;
+      }
+
+      function makeStick() {
+        const stick = document.createElement("span");
+        stick.className = "stick";
+        return stick;
+      }
+
+      const quietTens = document.querySelector("#quietTens");
+      const quietOnes = document.querySelector("#quietOnes");
+      const stickStep = document.querySelector("#stickStep");
+      const stickResult = document.querySelector("#stickResult");
+      let stickStage = 0;
+
+      function resetSticks() {
+        quietTens.innerHTML = "";
+        quietOnes.innerHTML = "";
+        for (let i = 0; i < 3; i += 1) quietTens.appendChild(makeTenGroup());
+        for (let i = 0; i < 6; i += 1) quietOnes.appendChild(makeStick());
+        stickStage = 0;
+        stickResult.textContent = "第 1 步：36 里面有 3 组十，6 根一。";
+        stickStep.textContent = "演示一步";
+      }
+      resetSticks();
+
+      stickStep.addEventListener("click", () => {
+        stickStage += 1;
+        if (stickStage === 1) {
+          for (let i = 0; i < 8; i += 1) quietOnes.appendChild(makeStick());
+          stickResult.textContent = "第 2 步：个位有 6 + 8 = 14 根。";
+        } else if (stickStage === 2) {
+          Array.from(quietOnes.querySelectorAll(".stick")).slice(0, 10).forEach((item) => item.remove());
+          quietTens.appendChild(makeTenGroup());
+          stickResult.textContent = "第 3 步：10 根分成一组，进到十位，还剩 4 根。36 + 8 = 44。";
+          stickStep.textContent = "重新演示";
+        } else {
+          resetSticks();
+        }
+      });
+
+      document.querySelector("#lidButton").addEventListener("click", () => {
+        document.querySelector("#hiddenCount").classList.toggle("show");
+      });
+
+      const moonPile = document.querySelector("#moonPile");
+      for (let i = 1; i <= 13; i += 1) {
+        const moon = document.createElement("span");
+        moon.className = "moon";
+        moon.textContent = i <= 10 ? "月" : "剩";
+        moonPile.appendChild(moon);
+      }
+
+      const hundredGrid = document.querySelector("#hundredGrid");
+      const hundredResult = document.querySelector("#hundredResult");
+      const targets = new Set([14, 23, 24, 25, 34]);
+      for (let i = 1; i <= 100; i += 1) {
+        const cell = document.createElement("button");
+        cell.className = "num-cell";
+        cell.type = "button";
+        cell.textContent = i;
+        cell.addEventListener("click", () => {
+          cell.classList.toggle("marked");
+          const markedTargets = Array.from(hundredGrid.querySelectorAll(".marked"))
+            .filter((item) => targets.has(Number(item.textContent))).length;
+          hundredResult.textContent = `已涂 ${markedTargets} 个目标格。目标是 14、23、24、25、34。`;
+        });
+        hundredGrid.appendChild(cell);
+      }
+
+      let draggedCard = null;
+      const dropZone = document.querySelector("#dropZone");
+      const dropItems = document.querySelector("#dropItems");
+      const dragResult = document.querySelector("#dragResult");
+
+      document.querySelectorAll(".drag-item").forEach((item) => {
+        item.addEventListener("dragstart", () => { draggedCard = item; });
+      });
+      dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropZone.classList.add("over");
+      });
+      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("over"));
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("over");
+        if (!draggedCard) return;
+        const value = Number(draggedCard.dataset.value);
+        if (value > 10) {
+          dropItems.appendChild(draggedCard);
+          const count = dropItems.querySelectorAll(".drag-item").length;
+          dragResult.textContent = count >= 3 ? "完成！大于 10 的答案已经放进口袋。" : `已经放入 ${count} 张正确答案卡。`;
+        } else {
+          dragResult.textContent = `${value} 没有大于 10，先放回答案卡区。`;
+        }
+        draggedCard = null;
+      });
+
+      const paintGrid = document.querySelector("#paintGrid");
+      const paintResult = document.querySelector("#paintResult");
+      let activeColor = "color-a";
+      document.querySelectorAll(".color-tool").forEach((tool) => {
+        tool.addEventListener("click", () => {
+          document.querySelectorAll(".color-tool").forEach((item) => item.classList.remove("active"));
+          tool.classList.add("active");
+          activeColor = tool.dataset.color;
+        });
+      });
+      for (let i = 1; i <= 50; i += 1) {
+        const cell = document.createElement("button");
+        cell.className = "paint-cell";
+        cell.type = "button";
+        cell.textContent = i;
+        cell.addEventListener("click", () => {
+          cell.classList.remove("color-a", "color-b", "color-c");
+          if (activeColor) cell.classList.add(activeColor);
+          const yellowCount = paintGrid.querySelectorAll(".color-a").length;
+          paintResult.textContent = yellowCount >= 5 ? "完成！已经涂出 5 个黄色答案格。" : `已经涂了 ${yellowCount} 个黄色格子。`;
+        });
+        paintGrid.appendChild(cell);
+      }
+    </script>
+  </body>
+</html>
