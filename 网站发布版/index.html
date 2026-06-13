@@ -6,6 +6,11 @@
     <title>安静书数学乐园</title>
     <style>
       * { box-sizing: border-box; }
+      html {
+        width: 100%;
+        overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+      }
       :root {
         --ink: #2b241a;
         --muted: #6c5a45;
@@ -20,6 +25,10 @@
       }
       body {
         margin: 0;
+        width: 100%;
+        min-width: 0;
+        overflow-x: hidden;
+        touch-action: manipulation;
         font-family: "Microsoft YaHei", Arial, sans-serif;
         color: var(--ink);
         background:
@@ -27,7 +36,13 @@
           radial-gradient(circle at 86% 12%, rgba(191, 232, 207, .42), transparent 22%),
           #f4eee2;
       }
-      button, input { font: inherit; }
+      button, input {
+        font: inherit;
+        -webkit-tap-highlight-color: rgba(255, 215, 106, .35);
+      }
+      button {
+        touch-action: manipulation;
+      }
       main {
         width: min(1180px, calc(100% - 28px));
         margin: 0 auto;
@@ -83,6 +98,10 @@
         font-size: 14px;
         font-weight: 900;
       }
+      .sticker.earned {
+        background: var(--yellow);
+        box-shadow: 0 0 0 5px rgba(255, 215, 106, .35);
+      }
       .book-shell {
         border: 5px solid var(--ink);
         border-radius: 28px;
@@ -92,7 +111,7 @@
       }
       .tabs {
         display: grid;
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         border-bottom: 5px solid var(--ink);
       }
       .tab {
@@ -119,7 +138,7 @@
       }
       .page {
         display: none;
-        min-height: 640px;
+        min-height: min(640px, calc(100svh - 220px));
         padding: 26px;
         background: var(--page);
       }
@@ -150,6 +169,55 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: 16px;
+      }
+      .template-note {
+        padding: 18px;
+        border: 4px dashed #c7b89e;
+        border-radius: 20px;
+        background: white;
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.55;
+      }
+      .question-menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .question-jump {
+        min-height: 118px;
+        padding: 14px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        box-shadow: 5px 5px 0 rgba(43, 36, 26, .12);
+      }
+      .question-jump:hover,
+      .question-jump:focus-visible {
+        transform: translateY(-2px);
+        outline: 4px solid rgba(255, 215, 106, .55);
+      }
+      .question-jump.done {
+        background: #e4f7eb;
+      }
+      .jump-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 900;
+      }
+      .jump-title {
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 1.35;
       }
       .module-card {
         min-height: 168px;
@@ -205,6 +273,293 @@
         gap: 16px;
         flex-wrap: wrap;
       }
+      .question-preview {
+        position: relative;
+        min-height: 260px;
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background:
+          linear-gradient(90deg, rgba(255, 215, 106, .22) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255, 215, 106, .22) 1px, transparent 1px),
+          white;
+        background-size: 28px 28px;
+        overflow: hidden;
+      }
+      .question-preview::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("assets/quiet-book-backdrop.png") center / cover no-repeat;
+        opacity: .1;
+      }
+      .asset-photo {
+        width: min(760px, 100%);
+        max-height: 320px;
+        object-fit: contain;
+        background: rgba(255, 250, 240, .86);
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        box-shadow: 7px 7px 0 rgba(43, 36, 26, .14);
+      }
+      .compare-board {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 14px;
+        align-items: center;
+        width: min(760px, 100%);
+      }
+      .compare-side {
+        min-height: 110px;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        border: 4px solid var(--ink);
+        border-radius: 20px;
+        background: white;
+        font-size: clamp(30px, 5vw, 56px);
+        font-weight: 900;
+        box-shadow: 5px 5px 0 rgba(43, 36, 26, .12);
+      }
+      .compare-symbol {
+        min-width: 96px;
+        min-height: 74px;
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: var(--yellow);
+        font-size: 22px;
+        font-weight: 900;
+        box-shadow: 5px 5px 0 rgba(43, 36, 26, .12);
+      }
+      .visual-stage {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        display: grid;
+        gap: 18px;
+        place-items: center;
+        padding: 18px;
+      }
+      .big-equation {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        font-size: clamp(38px, 8vw, 76px);
+        font-weight: 900;
+      }
+      .number-tile {
+        min-width: 86px;
+        min-height: 76px;
+        display: grid;
+        place-items: center;
+        padding: 8px 16px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        box-shadow: 5px 5px 0 rgba(43, 36, 26, .12);
+      }
+      .blank-tile {
+        min-width: 110px;
+        background: var(--yellow);
+      }
+      .visual-caption {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--muted);
+        text-align: center;
+      }
+      .place-row, .money-row, .box-row, .apple-row {
+        display: flex;
+        gap: 14px;
+        align-items: flex-end;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .step-strip {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .step-card {
+        min-width: 116px;
+        min-height: 78px;
+        display: grid;
+        place-items: center;
+        padding: 8px 12px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        font-size: 24px;
+        font-weight: 900;
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .12);
+      }
+      .step-card.answer-slot {
+        background: var(--yellow);
+      }
+      .number-line {
+        width: min(720px, 100%);
+        display: grid;
+        gap: 14px;
+      }
+      .line-track {
+        position: relative;
+        height: 86px;
+        border-bottom: 5px solid var(--ink);
+      }
+      .line-hop {
+        position: absolute;
+        bottom: 12px;
+        width: 38%;
+        height: 52px;
+        border: 5px solid var(--orange);
+        border-bottom: 0;
+        border-radius: 999px 999px 0 0;
+      }
+      .line-hop.small {
+        width: 24%;
+        left: 40%;
+        border-color: var(--green);
+      }
+      .line-hop.large { left: 5%; }
+      .line-markers {
+        display: flex;
+        justify-content: space-between;
+        font-size: 20px;
+        font-weight: 900;
+      }
+      .ten-frame {
+        display: grid;
+        grid-template-columns: repeat(5, 54px);
+        gap: 10px;
+        justify-content: center;
+      }
+      .ten-dot {
+        width: 54px;
+        height: 54px;
+        border: 4px solid var(--ink);
+        border-radius: 50%;
+        background: white;
+      }
+      .ten-dot.filled { background: var(--orange); }
+      .ten-dot.add { background: var(--green); }
+      .ten-card, .one-card, .money-ten, .coin-one, .crate, .apple-box {
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--ink);
+        font-weight: 900;
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .12);
+      }
+      .ten-card {
+        width: 62px;
+        height: 136px;
+        border-radius: 14px;
+        background: repeating-linear-gradient(180deg, #fff8d9 0 10px, #f0ca72 10px 18px);
+        writing-mode: vertical-rl;
+      }
+      .one-card {
+        width: 34px;
+        height: 104px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fff8d9, #f0ca72);
+      }
+      .money-ten {
+        width: 150px;
+        height: 82px;
+        border-radius: 18px;
+        background: #bfe8cf;
+        font-size: 24px;
+      }
+      .coin-one {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--yellow);
+        font-size: 18px;
+      }
+      .truck-scene {
+        display: grid;
+        grid-template-columns: minmax(150px, 260px) 1fr;
+        gap: 22px;
+        align-items: center;
+        width: min(720px, 100%);
+      }
+      .truck {
+        position: relative;
+        height: 126px;
+        border: 4px solid var(--ink);
+        border-radius: 22px 12px 12px 22px;
+        background: var(--blue);
+      }
+      .truck::before {
+        content: "";
+        position: absolute;
+        left: -44px;
+        bottom: 0;
+        width: 70px;
+        height: 72px;
+        border: 4px solid var(--ink);
+        border-radius: 18px 8px 8px 18px;
+        background: white;
+      }
+      .truck::after {
+        content: "";
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: -22px;
+        height: 28px;
+        background:
+          radial-gradient(circle, var(--ink) 0 13px, transparent 14px) left center / 52px 28px no-repeat,
+          radial-gradient(circle, var(--ink) 0 13px, transparent 14px) right center / 52px 28px no-repeat;
+      }
+      .crate, .apple-box {
+        width: 86px;
+        height: 70px;
+        border-radius: 10px;
+        background: var(--orange);
+        font-size: 18px;
+      }
+      .apple-box {
+        background:
+          radial-gradient(circle at 28% 32%, #e76f51 0 9px, transparent 10px),
+          radial-gradient(circle at 52% 28%, #e76f51 0 9px, transparent 10px),
+          radial-gradient(circle at 70% 50%, #e76f51 0 9px, transparent 10px),
+          #ffe3d4;
+        font-size: 24px;
+      }
+      .progress-pill {
+        display: inline-flex;
+        margin-left: 10px;
+        padding: 6px 12px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: white;
+        font-size: 15px;
+        font-weight: 900;
+        vertical-align: middle;
+      }
+      .dot-demo {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .dot-demo span {
+        width: 54px;
+        height: 54px;
+        border: 4px solid var(--ink);
+        border-radius: 50%;
+        background: var(--yellow);
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .14);
+      }
       .ten-group {
         position: relative;
         width: 112px;
@@ -252,6 +607,125 @@
         font-weight: 900;
         cursor: pointer;
       }
+      .answer-panel {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: stretch;
+        margin-top: 14px;
+      }
+      .answer-input {
+        width: 100%;
+        max-width: 100%;
+        min-height: 62px;
+        padding: 8px 16px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: white;
+        color: var(--ink);
+        font-size: 28px;
+        font-weight: 900;
+        text-align: center;
+      }
+      .answer-input:focus {
+        outline: 4px solid rgba(255, 215, 106, .55);
+      }
+      .answer-check {
+        min-width: 150px;
+        min-height: 62px;
+        padding: 0 22px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: var(--green);
+        color: var(--ink);
+        font-size: 20px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .answer-panel.correct .answer-input {
+        background: #e4f7eb;
+        box-shadow: 0 0 0 5px rgba(90, 184, 120, .22);
+      }
+      .answer-panel.wrong .answer-input {
+        background: #ffe1df;
+        animation: softShake .28s linear 1;
+      }
+      @keyframes softShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+      .choice-panel, .drag-answer-panel, .tap-panel {
+        display: none;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .choice-panel.active,
+      .drag-answer-panel.active,
+      .tap-panel.active {
+        display: grid;
+      }
+      .choice-panel {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .choice-button, .drag-choice, .tap-target {
+        min-height: 70px;
+        border: 3px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        color: var(--ink);
+        font-size: 26px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .12);
+        touch-action: manipulation;
+      }
+      .choice-button.correct, .drag-choice.correct, .tap-target.correct {
+        background: #e4f7eb;
+      }
+      .choice-button.wrong, .drag-choice.wrong, .tap-target.wrong {
+        background: #ffe1df;
+        animation: softShake .28s linear 1;
+      }
+      .drag-answer-panel {
+        grid-template-columns: 1fr minmax(180px, .7fr);
+        align-items: stretch;
+      }
+      .drag-choice-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        min-height: 118px;
+        padding: 12px;
+        border: 3px dashed #c7b89e;
+        border-radius: 18px;
+        background: white;
+      }
+      .drag-choice {
+        min-width: 92px;
+        padding: 0 16px;
+        background: var(--yellow);
+        touch-action: none;
+      }
+      .answer-pocket {
+        min-height: 118px;
+        display: grid;
+        place-items: center;
+        padding: 12px;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background: var(--green);
+        font-size: 22px;
+        font-weight: 900;
+      }
+      .answer-pocket.over {
+        outline: 5px solid rgba(255, 215, 106, .55);
+      }
+      .tap-panel {
+        grid-template-columns: repeat(5, 1fr);
+      }
       .result {
         margin-top: 14px;
         padding: 12px;
@@ -261,6 +735,66 @@
         font-size: 18px;
         font-weight: 900;
         line-height: 1.45;
+      }
+      .reward-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        place-items: center;
+        padding: 20px;
+        background: rgba(43, 36, 26, .42);
+      }
+      .reward-modal.show {
+        display: grid;
+      }
+      .reward-card {
+        width: min(420px, 100%);
+        padding: 24px;
+        border: 5px solid var(--ink);
+        border-radius: 26px;
+        background: var(--page);
+        text-align: center;
+        box-shadow: 12px 12px 0 rgba(43, 36, 26, .2);
+        animation: rewardPop .24s ease-out both;
+      }
+      .medal {
+        width: 118px;
+        height: 118px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 12px;
+        border: 5px solid var(--ink);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 28%, #fff7bc 0 22%, var(--yellow) 23% 70%, #efb84a 71%);
+        font-size: 42px;
+        font-weight: 900;
+      }
+      .reward-card h2 {
+        margin: 0 0 8px;
+        font-size: 34px;
+      }
+      .reward-card p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 19px;
+        font-weight: 900;
+        line-height: 1.45;
+      }
+      .next-question {
+        width: 100%;
+        min-height: 62px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: var(--green);
+        color: var(--ink);
+        font-size: 20px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      @keyframes rewardPop {
+        from { transform: scale(.88); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
       }
       .box-scene {
         min-height: 300px;
@@ -411,6 +945,8 @@
         font-weight: 900;
         cursor: grab;
         user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
       }
       .drag-item:active { cursor: grabbing; }
       .drop-zone.over { background: #e4f7eb; }
@@ -484,15 +1020,196 @@
         font-weight: 900;
       }
       @media (max-width: 900px) {
+        main {
+          width: min(100% - 24px, 820px);
+          padding: 20px 0 34px;
+        }
         .hero, .quiet-board, .drag-area { grid-template-columns: 1fr; }
+        .hero {
+          gap: 14px;
+          align-items: stretch;
+        }
+        .reward-book {
+          min-width: 0;
+          width: 100%;
+        }
+        .book-shell {
+          border-width: 4px;
+          border-radius: 22px;
+          box-shadow: 7px 7px 0 rgba(43, 36, 26, .14);
+        }
         .tabs { grid-template-columns: repeat(2, 1fr); }
-        .tab { border-bottom: 3px solid var(--ink); }
+        .tab {
+          min-height: 64px;
+          border-bottom: 3px solid var(--ink);
+          font-size: 18px;
+        }
+        .page {
+          min-height: auto;
+          padding: 22px;
+        }
+        .question-preview {
+          min-height: 300px;
+        }
+        .dot-demo span {
+          width: 64px;
+          height: 64px;
+        }
+        .answer-panel { grid-template-columns: 1fr; }
+        .choice-panel {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .drag-answer-panel {
+          grid-template-columns: 1fr;
+        }
+        .tap-panel {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .answer-input {
+          min-height: 72px;
+          font-size: 34px;
+        }
+        .answer-check, .action {
+          width: 100%;
+          min-height: 68px;
+          font-size: 22px;
+        }
+        .reward-card {
+          width: min(460px, 100%);
+        }
       }
       @media (max-width: 560px) {
-        main { width: min(100% - 18px, 1180px); }
-        .page { padding: 18px; }
+        main {
+          width: min(100% - 14px, 1180px);
+          padding: 12px 0 24px;
+        }
+        .hero {
+          margin-bottom: 12px;
+        }
+        h1 {
+          font-size: 32px;
+        }
+        .subtitle {
+          margin-top: 8px;
+          font-size: 16px;
+          line-height: 1.45;
+        }
+        .reward-book {
+          padding: 10px;
+          border-width: 3px;
+          border-radius: 16px;
+          box-shadow: 4px 4px 0 rgba(43, 36, 26, .12);
+        }
+        .sticker {
+          min-width: 58px;
+          min-height: 40px;
+          font-size: 13px;
+        }
+        .book-shell {
+          border-width: 3px;
+          border-radius: 18px;
+          box-shadow: none;
+        }
+        .page {
+          padding: 16px;
+        }
         .tabs { grid-template-columns: 1fr; }
-        .tab { border-right: 0; }
+        .tab {
+          min-height: 54px;
+          border-right: 0;
+          font-size: 17px;
+        }
+        .label {
+          font-size: 15px;
+          border-width: 2px;
+        }
+        .page-title {
+          margin-top: 12px;
+          font-size: 28px;
+        }
+        .intro {
+          margin-bottom: 14px;
+          font-size: 16px;
+          line-height: 1.45;
+        }
+        .question-preview {
+          min-height: 250px;
+          border-width: 3px;
+          border-radius: 18px;
+          background-size: 22px 22px;
+        }
+        .dot-demo {
+          gap: 12px;
+        }
+        .dot-demo span {
+          width: 52px;
+          height: 52px;
+          border-width: 3px;
+        }
+        .answer-input {
+          min-height: 70px;
+          font-size: 32px;
+        }
+        .choice-button, .drag-choice, .tap-target {
+          min-height: 64px;
+          font-size: 22px;
+        }
+        .asset-photo {
+          max-height: 230px;
+          border-width: 3px;
+          border-radius: 18px;
+        }
+        .compare-board {
+          grid-template-columns: 1fr;
+        }
+        .compare-symbol {
+          justify-self: center;
+        }
+        .answer-check, .action {
+          min-height: 64px;
+          font-size: 20px;
+        }
+        .result, .footer-note, .template-note {
+          font-size: 16px;
+          line-height: 1.45;
+        }
+        .question-menu {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .question-jump {
+          min-height: 96px;
+          border-width: 3px;
+          box-shadow: 3px 3px 0 rgba(43, 36, 26, .12);
+        }
+        .jump-title {
+          font-size: 18px;
+        }
+        .reward-modal {
+          padding: 12px;
+          align-items: end;
+        }
+        .reward-card {
+          padding: 20px;
+          border-width: 4px;
+          border-radius: 22px 22px 16px 16px;
+          box-shadow: 0 -7px 0 rgba(43, 36, 26, .12);
+        }
+        .medal {
+          width: 96px;
+          height: 96px;
+          font-size: 34px;
+        }
+        .reward-card h2 {
+          font-size: 28px;
+        }
+        .reward-card p {
+          font-size: 17px;
+        }
+        .next-question {
+          min-height: 66px;
+          font-size: 20px;
+        }
         .hundred-grid, .paint-grid { gap: 3px; }
         .num-cell, .paint-cell { font-size: 12px; border-radius: 6px; }
       }
@@ -506,75 +1223,46 @@
           <p class="subtitle">翻一翻、拖一拖、涂一涂，和数字一起闯关。每完成一页，就收集一枚数学贴纸。</p>
         </div>
         <aside class="reward-book">
-          <strong>本节贴纸册</strong>
-          <div class="sticker-row">
-            <span class="sticker">小棒</span>
-            <span class="sticker">盒子</span>
-            <span class="sticker">涂色</span>
-          </div>
+          <strong>奖励册</strong>
+          <div class="sticker-row" id="stickerRow"></div>
         </aside>
       </section>
 
       <section class="book-shell">
         <nav class="tabs" aria-label="安静书页面">
-          <button class="tab active" data-page="home" type="button">目录</button>
-          <button class="tab" data-page="sticks" type="button">小棒数位</button>
-          <button class="tab" data-page="hidden" type="button">遮挡盒子</button>
-          <button class="tab" data-page="grouping" type="button">装盒分组</button>
-          <button class="tab" data-page="hundred" type="button">百数表</button>
-          <button class="tab" data-page="drag" type="button">拖一拖</button>
-          <button class="tab" data-page="paint" type="button">涂色页</button>
-          <button class="tab" data-page="paper" type="button">挑战题</button>
+          <button class="tab active" data-page="sticks" type="button">做题</button>
+          <button class="tab" data-page="home" type="button">题目目录</button>
         </nav>
 
-        <section class="page active" id="page-home">
-          <span class="label">整本书结构</span>
-          <h2 class="page-title">一页一个小机关，先动手，再说算式</h2>
-          <p class="intro">每一页都有一个小任务。先看清楚，再动手操作，最后说出你的算式和答案。</p>
-          <div class="module-grid">
-            <article class="module-card" style="background:#fff1b8;">
-              <h3>小棒数位</h3>
-              <p>看几个十、几个一，练满十进一和退位拆十。</p>
-            </article>
-            <article class="module-card" style="background:#e4f7eb;">
-              <h3>遮挡盒子</h3>
-              <p>一共、外面、盒子里，翻开找隐藏部分。</p>
-            </article>
-            <article class="module-card" style="background:#ffe3d4;">
-              <h3>装盒分组</h3>
-              <p>每几个一盒，分一分，看看还剩几个。</p>
-            </article>
-            <article class="module-card" style="background:#dff0ff;">
-              <h3>百数表</h3>
-              <p>上下左右找数，建立加 10、减 10 的位置感。</p>
-            </article>
-            <article class="module-card" style="background:#eee7ff;">
-              <h3>图形统计</h3>
-              <p>数图形、分类、记录数量，练细心观察。</p>
-            </article>
-            <article class="module-card" style="background:#ffd3dc;">
-              <h3>拖一拖 / 涂色</h3>
-              <p>拖数字卡、点格子上色，动手完成小任务。</p>
-            </article>
-          </div>
+        <section class="page" id="page-home">
+          <span class="label">题目目录</span>
+          <h2 class="page-title">点一道题，马上开始做</h2>
+          <p class="intro">可以按顺序闯关，也可以直接点想练的题。做对以后，上方奖励册会亮起奖章。</p>
+          <div class="question-menu" id="questionMenu"></div>
         </section>
 
-        <section class="page" id="page-sticks">
-          <span class="label">小棒数位屋</span>
-          <h2 class="page-title">36 + 8 = ?</h2>
-          <p class="intro">先看 36 是 3 个十和 6 个一，再把 8 根小棒放到个位。满 10 根就分成一组，放进十位。</p>
-          <div class="quiet-board">
-            <div class="panel">
-              <h3>十位小屋</h3>
-              <div class="stick-zone" id="quietTens"></div>
-            </div>
-            <div class="panel">
-              <h3>个位小屋</h3>
-              <div class="stick-zone" id="quietOnes"></div>
+        <section class="page active" id="page-sticks">
+          <span class="label" id="questionLabel">当前题目</span>
+          <h2 class="page-title" id="questionTitle">37 + 23 = ?</h2>
+          <span class="progress-pill" id="questionProgress">第 1 / 10 题</span>
+          <p class="intro" id="questionPrompt">先算个位，再算十位。写出最后答案。</p>
+          <div class="question-preview" id="questionVisual">
+            <div class="dot-demo" aria-label="3 个点子">
+              <span></span><span></span><span></span>
             </div>
           </div>
-          <button class="action" id="stickStep" type="button">演示一步</button>
-          <div class="result" id="stickResult">第 1 步：36 里面有 3 组十，6 根一。</div>
+          <button class="action" id="questionAction" type="button">动一动</button>
+          <div class="answer-panel" id="questionAnswerPanel">
+            <input class="answer-input" id="questionAnswerInput" type="number" inputmode="numeric" placeholder="在这里写答案" aria-label="输入答案" />
+            <button class="answer-check" id="questionAnswerCheck" type="button">检查答案</button>
+          </div>
+          <div class="choice-panel" id="choicePanel"></div>
+          <div class="drag-answer-panel" id="dragAnswerPanel">
+            <div class="drag-choice-row" id="dragChoiceRow"></div>
+            <div class="answer-pocket" id="answerPocket">答案袋</div>
+          </div>
+          <div class="tap-panel" id="tapPanel"></div>
+          <div class="result" id="questionResult">这一页是框架预览。真实题目会按照图片改成对应玩法。</div>
         </section>
 
         <section class="page" id="page-hidden">
@@ -695,6 +1383,15 @@
         </section>
       </section>
 
+      <div class="reward-modal" id="rewardModal" aria-hidden="true">
+        <div class="reward-card" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
+          <div class="medal" id="medal">奖</div>
+          <h2 id="rewardTitle">获得小棒奖章！</h2>
+          <p id="rewardText">你完成了这一页。</p>
+          <button class="next-question" id="nextQuestionButton" type="button">下一题</button>
+        </div>
+      </div>
+
       <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
     </main>
 
@@ -702,12 +1399,16 @@
       const tabs = Array.from(document.querySelectorAll(".tab"));
       const pages = Array.from(document.querySelectorAll(".page"));
 
+      function showPage(pageName) {
+        tabs.forEach((item) => item.classList.toggle("active", item.dataset.page === pageName));
+        pages.forEach((page) => page.classList.remove("active"));
+        document.querySelector(`#page-${pageName}`).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
-          tabs.forEach((item) => item.classList.remove("active"));
-          pages.forEach((page) => page.classList.remove("active"));
-          tab.classList.add("active");
-          document.querySelector(`#page-${tab.dataset.page}`).classList.add("active");
+          showPage(tab.dataset.page);
         });
       });
 
@@ -728,36 +1429,548 @@
         return stick;
       }
 
-      const quietTens = document.querySelector("#quietTens");
-      const quietOnes = document.querySelector("#quietOnes");
-      const stickStep = document.querySelector("#stickStep");
-      const stickResult = document.querySelector("#stickResult");
-      let stickStage = 0;
-
-      function resetSticks() {
-        quietTens.innerHTML = "";
-        quietOnes.innerHTML = "";
-        for (let i = 0; i < 3; i += 1) quietTens.appendChild(makeTenGroup());
-        for (let i = 0; i < 6; i += 1) quietOnes.appendChild(makeStick());
-        stickStage = 0;
-        stickResult.textContent = "第 1 步：36 里面有 3 组十，6 根一。";
-        stickStep.textContent = "演示一步";
-      }
-      resetSticks();
-
-      stickStep.addEventListener("click", () => {
-        stickStage += 1;
-        if (stickStage === 1) {
-          for (let i = 0; i < 8; i += 1) quietOnes.appendChild(makeStick());
-          stickResult.textContent = "第 2 步：个位有 6 + 8 = 14 根。";
-        } else if (stickStage === 2) {
-          Array.from(quietOnes.querySelectorAll(".stick")).slice(0, 10).forEach((item) => item.remove());
-          quietTens.appendChild(makeTenGroup());
-          stickResult.textContent = "第 3 步：10 根分成一组，进到十位，还剩 4 根。36 + 8 = 44。";
-          stickStep.textContent = "重新演示";
-        } else {
-          resetSticks();
+      const questions = [
+        {
+          label: "口算",
+          title: "37 + 23 = ?",
+          prompt: "先算个位，再算十位。写出最后答案。",
+          answer: 60,
+          mode: "choice",
+          options: [50, 57, 60, 70],
+          hint: "先算 30 + 20 = 50，再算 7 + 3 = 10，合起来是 60。",
+          success: "答对啦！个位满十，十位也要多 1。",
+          rewardTitle: "获得口算奖章！",
+          rewardText: "你完成了 37 + 23。",
+          medalText: "算",
+          actionText: "看分解",
+          visual: { type: "place-add", tensA: 3, onesA: 7, tensB: 2, onesB: 3 }
+        },
+        {
+          label: "口算",
+          title: "44 - 18 = ?",
+          prompt: "个位不够减，先借 1 个十再算。",
+          answer: 26,
+          mode: "input",
+          hint: "14 - 8 = 6，剩下 2 个十，所以答案是 26。",
+          success: "答对啦！退位减法算得很稳。",
+          rewardTitle: "获得退位奖章！",
+          rewardText: "你完成了 44 - 18。",
+          medalText: "退",
+          actionText: "看提示",
+          visual: { type: "number-line", start: 44, steps: ["-10", "-8"], end: "?" }
+        },
+        {
+          label: "连加连减",
+          title: "44 - 14 + 5 = ?",
+          prompt: "从左往右一步一步算，不要跳步。",
+          answer: 35,
+          mode: "choice",
+          options: [25, 30, 35, 40],
+          hint: "先算 44 - 14 = 30，再算 30 + 5 = 35。",
+          success: "答对啦！连算题要按顺序。",
+          rewardTitle: "获得顺序奖章！",
+          rewardText: "你按顺序完成了连算题。",
+          medalText: "序",
+          actionText: "看步骤",
+          visual: { type: "step-cards", cards: ["44 - 14", "30 + 5", "?"] }
+        },
+        {
+          label: "填方框",
+          title: "33 + 8 = □",
+          prompt: "方框里应该填几？把答案写进去。",
+          answer: 41,
+          mode: "drag",
+          options: [40, 41, 42, 43],
+          hint: "33 + 7 = 40，再加 1，就是 41。",
+          success: "答对啦！你会用凑十法了。",
+          rewardTitle: "获得方框奖章！",
+          rewardText: "你把方框里的数找出来了。",
+          medalText: "□",
+          actionText: "看凑十",
+          visual: { type: "ten-frame", base: 3, add: 8 }
+        },
+        {
+          label: "比大小",
+          title: "50 + 6  ?  65",
+          prompt: "先算左边，再和右边比一比。",
+          answer: "<",
+          mode: "compare",
+          options: [">", "<", "="],
+          hint: "50 + 6 = 56，56 比 65 小，所以填 <。",
+          success: "答对啦！先算再比较。",
+          rewardTitle: "获得比较奖章！",
+          rewardText: "你完成了 50 + 6 和 65 的比较。",
+          medalText: "比",
+          actionText: "先算左边",
+          visual: { type: "compare", left: "50 + 6", right: "65" }
+        },
+        {
+          label: "比大小",
+          title: "90  ?  99 - 9",
+          prompt: "先算右边，再判断是大于、小于还是等于。",
+          answer: "=",
+          mode: "compare",
+          options: [">", "<", "="],
+          hint: "99 - 9 = 90，左边也是 90，所以填 =。",
+          success: "答对啦！两个数一样大。",
+          rewardTitle: "获得等号奖章！",
+          rewardText: "你找到了相等的两个数。",
+          medalText: "=",
+          actionText: "先算右边",
+          visual: { type: "compare", left: "90", right: "99 - 9" }
+        },
+        {
+          label: "小棒进位",
+          title: "27 + 4 = ?",
+          prompt: "看小棒：先算 7 + 4，再和 2 个十合起来。",
+          answer: 31,
+          mode: "tap",
+          options: [29, 30, 31, 32, 34],
+          hint: "先算 7 + 4 = 11，再算 20 + 11 = 31。",
+          success: "答对啦！小棒满十可以变成一组十。",
+          rewardTitle: "获得小棒奖章！",
+          rewardText: "你看懂了 27 + 4 的进位。",
+          medalText: "棒",
+          actionText: "看小棒",
+          visual: { type: "sticks", tens: 2, ones: 7, addOnes: 4 }
+        },
+        {
+          label: "小棒进位",
+          title: "36 + 8 = ?",
+          prompt: "看小棒：先算 6 + 8，再和 3 个十合起来。",
+          answer: 44,
+          mode: "input",
+          hint: "先算 6 + 8 = 14，再算 30 + 14 = 44。",
+          success: "答对啦！你会先算个位再合起来。",
+          rewardTitle: "获得小棒奖章！",
+          rewardText: "你完成了 36 + 8。",
+          medalText: "棒",
+          actionText: "看小棒",
+          visual: { type: "sticks", tens: 3, ones: 6, addOnes: 8 }
+        },
+        {
+          label: "数位组成",
+          title: "1 个十和 6 个一，合起来是多少？",
+          prompt: "一个十是 10，再加 6 个一。",
+          answer: 16,
+          mode: "choice",
+          options: [10, 16, 61, 6],
+          hint: "1 个十是 10，6 个一是 6，10 + 6 = 16。",
+          success: "答对啦！你看懂了几个十和几个一。",
+          rewardTitle: "获得数位奖章！",
+          rewardText: "你完成了十和一的组成。",
+          medalText: "位",
+          actionText: "数一数",
+          visual: { type: "money", tens: 1, ones: 6 }
+        },
+        {
+          label: "数位组成",
+          title: "四十九添 1 是多少？",
+          prompt: "49 再添 1，就满成 5 个十。",
+          answer: 50,
+          mode: "drag",
+          options: [40, 49, 50, 59],
+          hint: "49 后面一个数是 50，也就是 5 个十。",
+          success: "答对啦！49 添 1 就满十了。",
+          rewardTitle: "获得满十奖章！",
+          rewardText: "你找到 49 的后一个整十数。",
+          medalText: "十",
+          actionText: "看数位",
+          visual: { type: "number-line", start: 49, steps: ["+1"], end: "?" }
+        },
+        {
+          label: "看图应用",
+          title: "原来有 68 箱，运走 12 箱，还剩多少箱？",
+          prompt: "求还剩，用减法。把剩下的箱数写出来。",
+          answer: 56,
+          mode: "choice",
+          options: [46, 56, 76, 80],
+          hint: "求还剩：68 - 12。先算 68 - 10 = 58，再减 2 = 56。",
+          success: "答对啦！看到“还剩”就想到减法。",
+          rewardTitle: "获得货车奖章！",
+          rewardText: "你完成了运箱子问题。",
+          medalText: "车",
+          actionText: "看箱子",
+          visual: { type: "photo", src: "assets/real-truck-crates.png", caption: "看货车和箱子，想一想：运走后还剩多少？" }
+        },
+        {
+          label: "看图应用",
+          title: "有 24 箱苹果，每次运 8 箱，需要几次？",
+          prompt: "可以想：几个 8 合起来是 24。",
+          answer: 3,
+          mode: "drag",
+          options: [2, 3, 4, 8],
+          hint: "8 + 8 + 8 = 24，所以需要 3 次。",
+          success: "答对啦！你会用分组想问题。",
+          rewardTitle: "获得苹果奖章！",
+          rewardText: "你完成了搬苹果问题。",
+          medalText: "果",
+          actionText: "分一分",
+          visual: { type: "photo", src: "assets/real-apple-crates.png", caption: "看 24 箱苹果，想一想每次运 8 箱，需要几次？" }
+        },
+        {
+          label: "比大小",
+          title: "20 + 9  ?  30 + 6",
+          prompt: "两边都要先算，再比较大小。",
+          answer: "<",
+          mode: "compare",
+          options: [">", "<", "="],
+          hint: "20 + 9 = 29，30 + 6 = 36，29 比 36 小。",
+          success: "答对啦！两边都算清楚了。",
+          rewardTitle: "获得双边比较奖章！",
+          rewardText: "你完成了两边算式的比较。",
+          medalText: "比",
+          actionText: "两边都算",
+          visual: { type: "compare", left: "20 + 9", right: "30 + 6" }
+        },
+        {
+          label: "比大小",
+          title: "18 - 9  ?  19 - 8",
+          prompt: "先算两边，再填符号。",
+          answer: "<",
+          mode: "compare",
+          options: [">", "<", "="],
+          hint: "18 - 9 = 9，19 - 8 = 11，9 比 11 小。",
+          success: "答对啦！减法比较也能一步一步来。",
+          rewardTitle: "获得减法比较奖章！",
+          rewardText: "你完成了两道减法的比较。",
+          medalText: "减",
+          actionText: "两边都算",
+          visual: { type: "compare", left: "18 - 9", right: "19 - 8" }
         }
+      ];
+      let currentQuestionIndex = 0;
+
+      const questionLabel = document.querySelector("#questionLabel");
+      const questionTitle = document.querySelector("#questionTitle");
+      const questionProgress = document.querySelector("#questionProgress");
+      const questionPrompt = document.querySelector("#questionPrompt");
+      const questionVisual = document.querySelector("#questionVisual");
+      const questionAction = document.querySelector("#questionAction");
+      const questionResult = document.querySelector("#questionResult");
+      const questionAnswerPanel = document.querySelector("#questionAnswerPanel");
+      const questionAnswerInput = document.querySelector("#questionAnswerInput");
+      const questionAnswerCheck = document.querySelector("#questionAnswerCheck");
+      const choicePanel = document.querySelector("#choicePanel");
+      const dragAnswerPanel = document.querySelector("#dragAnswerPanel");
+      const dragChoiceRow = document.querySelector("#dragChoiceRow");
+      const answerPocket = document.querySelector("#answerPocket");
+      const tapPanel = document.querySelector("#tapPanel");
+      const questionMenu = document.querySelector("#questionMenu");
+      const stickerRow = document.querySelector("#stickerRow");
+      const rewardModal = document.querySelector("#rewardModal");
+      const nextQuestionButton = document.querySelector("#nextQuestionButton");
+      const rewardTitle = document.querySelector("#rewardTitle");
+      const rewardText = document.querySelector("#rewardText");
+      const medal = document.querySelector("#medal");
+
+      questions.forEach((question, index) => {
+        const sticker = document.createElement("span");
+        sticker.className = "sticker";
+        sticker.dataset.index = String(index);
+        sticker.textContent = `${index + 1}`;
+        sticker.title = question.label;
+        stickerRow.appendChild(sticker);
+
+        const jumpButton = document.createElement("button");
+        jumpButton.className = "question-jump";
+        jumpButton.type = "button";
+        jumpButton.dataset.index = String(index);
+        jumpButton.innerHTML = `
+          <span class="jump-meta"><span>第 ${index + 1} 题</span><span>${question.label}</span></span>
+          <span class="jump-title">${question.title}</span>
+        `;
+        jumpButton.addEventListener("click", () => {
+          currentQuestionIndex = index;
+          renderQuestion(questions[currentQuestionIndex]);
+          showPage("sticks");
+        });
+        questionMenu.appendChild(jumpButton);
+      });
+
+      function makeNumberTile(text, extraClass = "") {
+        return `<span class="number-tile ${extraClass}">${text}</span>`;
+      }
+
+      function renderVisual(visual) {
+        if (visual.type === "equation") {
+          return `
+            <div class="visual-stage">
+              <div class="big-equation">
+                ${visual.parts.map((part) => makeNumberTile(part)).join("")}
+                ${makeNumberTile("?", "blank-tile")}
+              </div>
+              <div class="visual-caption">把问号里的答案写到下面。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "photo") {
+          return `
+            <div class="visual-stage">
+              <img class="asset-photo" src="${visual.src}" alt="" />
+              <div class="visual-caption">${visual.caption}</div>
+            </div>
+          `;
+        }
+        if (visual.type === "compare") {
+          return `
+            <div class="visual-stage">
+              <div class="compare-board">
+                <div class="compare-side">${visual.left}</div>
+                <div class="compare-symbol">选符号</div>
+                <div class="compare-side">${visual.right}</div>
+              </div>
+              <div class="visual-caption">先算，再选择 >、< 或 =。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "place-add") {
+          const tensA = Array.from({ length: visual.tensA }, () => '<span class="ten-card">10根</span>').join("");
+          const onesA = Array.from({ length: visual.onesA }, () => '<span class="one-card"></span>').join("");
+          const tensB = Array.from({ length: visual.tensB }, () => '<span class="ten-card" style="background:#dff0ff;">10根</span>').join("");
+          const onesB = Array.from({ length: visual.onesB }, () => '<span class="one-card" style="background:var(--green);"></span>').join("");
+          return `
+            <div class="visual-stage">
+              <div class="visual-caption">第一堆：${visual.tensA} 个十和 ${visual.onesA} 个一</div>
+              <div class="place-row">${tensA}${onesA}</div>
+              <strong style="font-size:34px;">加上</strong>
+              <div class="place-row">${tensB}${onesB}</div>
+              <div class="visual-caption">先把一合起来，再把十合起来。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "number-line") {
+          const stepText = visual.steps.join("，再 ");
+          return `
+            <div class="visual-stage">
+              <div class="number-line">
+                <div class="line-track">
+                  <span class="line-hop large"></span>
+                  <span class="line-hop small"></span>
+                </div>
+                <div class="line-markers">
+                  <span>${visual.start}</span>
+                  <span>${stepText}</span>
+                  <span>${visual.end}</span>
+                </div>
+              </div>
+              <div class="visual-caption">沿着数轴跳一跳，再把落点写下来。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "step-cards") {
+          const cards = visual.cards.map((card, index) => `<span class="step-card ${index === visual.cards.length - 1 ? "answer-slot" : ""}">${card}</span>`).join("");
+          return `
+            <div class="visual-stage">
+              <div class="step-strip">${cards}</div>
+              <div class="visual-caption">按卡片顺序算，最后一张就是答案。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "ten-frame") {
+          const total = visual.base + visual.add;
+          const dots = Array.from({ length: 10 }, (_, index) => {
+            const className = index < visual.base ? "filled" : index < Math.min(total, 10) ? "add" : "";
+            return `<span class="ten-dot ${className}"></span>`;
+          }).join("");
+          return `
+            <div class="visual-stage">
+              <div class="ten-frame">${dots}</div>
+              <div class="visual-caption">先凑满 10，再把剩下的数接着加。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "sticks") {
+          return `
+            <div class="visual-stage">
+              <img class="asset-photo" src="assets/real-sticks-cards.png" alt="" />
+              <div class="visual-caption">先数个位小棒，满 10 根就想成 1 个十。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "money") {
+          const tens = Array.from({ length: visual.tens }, () => '<span class="money-ten">10元</span>').join("");
+          const ones = Array.from({ length: visual.ones }, () => '<span class="coin-one">1</span>').join("");
+          return `
+            <div class="visual-stage">
+              <div class="money-row">${tens}${ones}</div>
+              <div class="visual-caption">${visual.tens} 个十和 ${visual.ones} 个一，合起来是多少？</div>
+            </div>
+          `;
+        }
+        if (visual.type === "truck") {
+          const crates = Array.from({ length: 6 }, () => '<span class="crate">箱</span>').join("");
+          return `
+            <div class="visual-stage">
+              <div class="truck-scene">
+                <div class="truck"></div>
+                <div class="box-row">${crates}</div>
+              </div>
+              <div class="visual-caption">原来 ${visual.total} 箱，运走 ${visual.moved} 箱，求还剩。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "apples") {
+          const groups = Array.from({ length: visual.total / visual.each }, () => '<span class="apple-box">8</span>').join("");
+          return `
+            <div class="visual-stage">
+              <div class="apple-row">${groups}</div>
+              <div class="visual-caption">每次运 8 箱，看看 24 里面有几个 8。</div>
+            </div>
+          `;
+        }
+        return "";
+      }
+
+      function renderQuestion(question) {
+        questionLabel.textContent = question.label;
+        questionTitle.textContent = question.title;
+        questionProgress.textContent = `第 ${currentQuestionIndex + 1} / ${questions.length} 题`;
+        questionPrompt.textContent = question.prompt;
+        questionVisual.innerHTML = renderVisual(question.visual);
+        questionAction.textContent = question.actionText;
+        questionResult.textContent = "先动手试一试，再写答案。";
+        questionAnswerPanel.classList.remove("correct", "wrong");
+        questionAnswerInput.value = "";
+        renderInteraction(question);
+        rewardTitle.textContent = question.rewardTitle;
+        rewardText.textContent = question.rewardText;
+        medal.textContent = question.medalText;
+      }
+
+      function resetInteractionPanels() {
+        questionAnswerPanel.style.display = "none";
+        choicePanel.classList.remove("active");
+        dragAnswerPanel.classList.remove("active");
+        tapPanel.classList.remove("active");
+        choicePanel.innerHTML = "";
+        dragChoiceRow.innerHTML = "";
+        tapPanel.innerHTML = "";
+        answerPocket.classList.remove("over");
+        answerPocket.textContent = "拖到这里，或直接点答案卡";
+      }
+
+      function makeOptionButton(value, className) {
+        const button = document.createElement("button");
+        button.className = className;
+        button.type = "button";
+        button.textContent = value;
+        button.dataset.value = String(value);
+        return button;
+      }
+
+      function renderInteraction(question) {
+        resetInteractionPanels();
+        if (!question.mode || question.mode === "input") {
+          questionAnswerPanel.style.display = "grid";
+          return;
+        }
+        if (question.mode === "choice" || question.mode === "compare") {
+          choicePanel.classList.add("active");
+          question.options.forEach((option) => {
+            const button = makeOptionButton(option, "choice-button");
+            button.addEventListener("click", () => checkQuestionAnswer(option, button));
+            choicePanel.appendChild(button);
+          });
+          return;
+        }
+        if (question.mode === "tap") {
+          tapPanel.classList.add("active");
+          question.options.forEach((option) => {
+            const button = makeOptionButton(option, "tap-target");
+            button.addEventListener("click", () => checkQuestionAnswer(option, button));
+            tapPanel.appendChild(button);
+          });
+          return;
+        }
+        if (question.mode === "drag") {
+          dragAnswerPanel.classList.add("active");
+          question.options.forEach((option) => {
+            const button = makeOptionButton(option, "drag-choice");
+            button.draggable = true;
+            button.addEventListener("click", () => checkQuestionAnswer(option, button));
+            button.addEventListener("dragstart", () => {
+              draggedAnswerValue = option;
+              draggedAnswerButton = button;
+            });
+            dragChoiceRow.appendChild(button);
+          });
+        }
+      }
+
+      renderQuestion(questions[currentQuestionIndex]);
+
+      questionAction.addEventListener("click", () => {
+        questionResult.textContent = questions[currentQuestionIndex].hint;
+      });
+
+      function markWrong(target) {
+        if (target) {
+          target.classList.remove("wrong");
+          void target.offsetWidth;
+          target.classList.add("wrong");
+          return;
+        }
+        questionAnswerPanel.classList.add("wrong");
+      }
+
+      function checkQuestionAnswer(selectedValue, target) {
+        const currentQuestion = questions[currentQuestionIndex];
+        const rawAnswer = selectedValue ?? questionAnswerInput.value;
+        const answer = typeof currentQuestion.answer === "number" ? Number(rawAnswer) : String(rawAnswer);
+        questionAnswerPanel.classList.remove("correct", "wrong");
+        choicePanel.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
+        dragChoiceRow.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
+        tapPanel.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
+        if (answer === currentQuestion.answer) {
+          questionAnswerPanel.classList.add("correct");
+          if (target) target.classList.add("correct");
+          const sticker = stickerRow.querySelector(`[data-index="${currentQuestionIndex}"]`);
+          if (sticker) sticker.classList.add("earned");
+          const jumpButton = questionMenu.querySelector(`[data-index="${currentQuestionIndex}"]`);
+          if (jumpButton) jumpButton.classList.add("done");
+          questionResult.textContent = currentQuestion.success;
+          rewardModal.classList.add("show");
+          rewardModal.setAttribute("aria-hidden", "false");
+        } else {
+          markWrong(target);
+          questionResult.textContent = currentQuestion.hint;
+        }
+      }
+
+      let draggedAnswerValue = null;
+      let draggedAnswerButton = null;
+
+      answerPocket.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        answerPocket.classList.add("over");
+      });
+      answerPocket.addEventListener("dragleave", () => answerPocket.classList.remove("over"));
+      answerPocket.addEventListener("drop", (event) => {
+        event.preventDefault();
+        answerPocket.classList.remove("over");
+        if (draggedAnswerValue === null) return;
+        checkQuestionAnswer(draggedAnswerValue, draggedAnswerButton);
+        draggedAnswerValue = null;
+        draggedAnswerButton = null;
+      });
+
+      questionAnswerCheck.addEventListener("click", () => checkQuestionAnswer());
+      questionAnswerInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") checkQuestionAnswer();
+      });
+
+      nextQuestionButton.addEventListener("click", () => {
+        rewardModal.classList.remove("show");
+        rewardModal.setAttribute("aria-hidden", "true");
+        currentQuestionIndex += 1;
+        if (currentQuestionIndex >= questions.length) {
+          questionResult.textContent = "这一组题完成啦！奖励册里已经有新的奖章。";
+          showPage("home");
+          return;
+        }
+        renderQuestion(questions[currentQuestionIndex]);
+        showPage("sticks");
       });
 
       document.querySelector("#lidButton").addEventListener("click", () => {
