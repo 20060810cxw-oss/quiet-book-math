@@ -792,6 +792,40 @@
         font-weight: 900;
         cursor: pointer;
       }
+      .grand-card {
+        width: min(560px, 100%);
+        background:
+          radial-gradient(circle at 15% 12%, rgba(255, 215, 106, .5), transparent 26%),
+          radial-gradient(circle at 84% 18%, rgba(191, 232, 207, .6), transparent 24%),
+          var(--page);
+      }
+      .grand-medal {
+        width: 138px;
+        height: 138px;
+        margin-bottom: 14px;
+        font-size: 52px;
+        background:
+          radial-gradient(circle at 35% 28%, #fff9c9 0 20%, var(--yellow) 21% 68%, #e9a93f 69%),
+          var(--yellow);
+      }
+      .grand-stars {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 12px 0 18px;
+      }
+      .grand-stars span {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        background: var(--yellow);
+        font-size: 22px;
+        font-weight: 900;
+        box-shadow: 3px 3px 0 rgba(43, 36, 26, .12);
+      }
       @keyframes rewardPop {
         from { transform: scale(.88); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
@@ -1392,6 +1426,18 @@
         </div>
       </div>
 
+      <div class="reward-modal" id="grandRewardModal" aria-hidden="true">
+        <div class="reward-card grand-card" role="dialog" aria-modal="true" aria-labelledby="grandRewardTitle">
+          <div class="medal grand-medal">全</div>
+          <h2 id="grandRewardTitle">全部完成！</h2>
+          <p>你把这一组题都做对了，获得“数学小闯关王”大奖章。</p>
+          <div class="grand-stars" aria-hidden="true">
+            <span>算</span><span>比</span><span>棒</span><span>果</span>
+          </div>
+          <button class="next-question" id="grandRewardButton" type="button">回到题目目录</button>
+        </div>
+      </div>
+
       <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
     </main>
 
@@ -1660,9 +1706,13 @@
       const stickerRow = document.querySelector("#stickerRow");
       const rewardModal = document.querySelector("#rewardModal");
       const nextQuestionButton = document.querySelector("#nextQuestionButton");
+      const grandRewardModal = document.querySelector("#grandRewardModal");
+      const grandRewardButton = document.querySelector("#grandRewardButton");
       const rewardTitle = document.querySelector("#rewardTitle");
       const rewardText = document.querySelector("#rewardText");
       const medal = document.querySelector("#medal");
+      const completedQuestions = new Set();
+      let pendingGrandReward = false;
 
       questions.forEach((question, index) => {
         const sticker = document.createElement("span");
@@ -1925,11 +1975,13 @@
         if (answer === currentQuestion.answer) {
           questionAnswerPanel.classList.add("correct");
           if (target) target.classList.add("correct");
+          completedQuestions.add(currentQuestionIndex);
           const sticker = stickerRow.querySelector(`[data-index="${currentQuestionIndex}"]`);
           if (sticker) sticker.classList.add("earned");
           const jumpButton = questionMenu.querySelector(`[data-index="${currentQuestionIndex}"]`);
           if (jumpButton) jumpButton.classList.add("done");
           questionResult.textContent = currentQuestion.success;
+          pendingGrandReward = completedQuestions.size === questions.length;
           rewardModal.classList.add("show");
           rewardModal.setAttribute("aria-hidden", "false");
         } else {
@@ -1963,6 +2015,12 @@
       nextQuestionButton.addEventListener("click", () => {
         rewardModal.classList.remove("show");
         rewardModal.setAttribute("aria-hidden", "true");
+        if (pendingGrandReward) {
+          pendingGrandReward = false;
+          grandRewardModal.classList.add("show");
+          grandRewardModal.setAttribute("aria-hidden", "false");
+          return;
+        }
         currentQuestionIndex += 1;
         if (currentQuestionIndex >= questions.length) {
           questionResult.textContent = "这一组题完成啦！奖励册里已经有新的奖章。";
@@ -1971,6 +2029,12 @@
         }
         renderQuestion(questions[currentQuestionIndex]);
         showPage("sticks");
+      });
+
+      grandRewardButton.addEventListener("click", () => {
+        grandRewardModal.classList.remove("show");
+        grandRewardModal.setAttribute("aria-hidden", "true");
+        showPage("home");
       });
 
       document.querySelector("#lidButton").addEventListener("click", () => {
