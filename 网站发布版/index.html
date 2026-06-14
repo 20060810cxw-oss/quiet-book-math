@@ -102,6 +102,32 @@
         background: var(--yellow);
         box-shadow: 0 0 0 5px rgba(255, 215, 106, .35);
       }
+      .medal-total {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: #fff;
+        font-size: 18px;
+        font-weight: 900;
+      }
+      .new-set-button {
+        width: 100%;
+        min-height: 48px;
+        margin-top: 12px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: var(--orange);
+        color: var(--ink);
+        font-size: 17px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .18);
+      }
+      .new-set-button:active {
+        transform: translateY(2px);
+        box-shadow: 2px 2px 0 rgba(43, 36, 26, .18);
+      }
       .book-shell {
         border: 5px solid var(--ink);
         border-radius: 28px;
@@ -111,7 +137,7 @@
       }
       .tabs {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         border-bottom: 5px solid var(--ink);
       }
       .tab {
@@ -238,6 +264,283 @@
         font-weight: 800;
         line-height: 1.45;
       }
+      .mole-entry {
+        position: relative;
+        min-height: 178px;
+        padding-right: 104px;
+        background:
+          radial-gradient(circle at 86% 26%, rgba(255, 215, 106, .72), transparent 24%),
+          linear-gradient(135deg, #e4f7c6, #fff5b6 52%, #cf9b59);
+        cursor: pointer;
+        text-align: left;
+        overflow: hidden;
+      }
+      .mole-entry::after {
+        content: "🐹";
+        position: absolute;
+        right: 16px;
+        bottom: 12px;
+        width: 74px;
+        height: 74px;
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--ink);
+        border-radius: 50% 50% 44% 44%;
+        background: #8b5d2e;
+        font-size: 42px;
+        box-shadow: inset 0 -12px 0 rgba(43, 36, 26, .16);
+      }
+      .mole-entry:hover,
+      .mole-entry:focus-visible {
+        transform: translateY(-2px);
+        outline: 4px solid rgba(255, 215, 106, .6);
+      }
+      .mole-entry .play-tag {
+        display: inline-flex;
+        margin-top: 14px;
+        padding: 8px 12px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: var(--yellow);
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 900;
+      }
+      .mole-game-shell {
+        display: grid;
+        gap: 18px;
+      }
+      .mole-controls {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+        padding: 18px;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background: #f4f0be;
+      }
+      .mole-control-group {
+        display: grid;
+        gap: 10px;
+      }
+      .mole-control-title {
+        color: var(--muted);
+        font-size: 16px;
+        font-weight: 900;
+      }
+      .mole-segmented {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .mole-segmented.two {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .mole-option {
+        min-height: 52px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: white;
+        color: var(--ink);
+        font-size: 18px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 rgba(43, 36, 26, .12);
+      }
+      .mole-option.active {
+        background: var(--yellow);
+        box-shadow: inset 0 -5px 0 rgba(43, 36, 26, .12);
+      }
+      .mole-start {
+        min-width: 150px;
+        min-height: 58px;
+        border: 4px solid var(--ink);
+        border-radius: 16px;
+        background: #66b96d;
+        color: white;
+        font-size: 21px;
+        font-weight: 900;
+        cursor: pointer;
+        text-shadow: 1px 1px 0 rgba(43, 36, 26, .25);
+        box-shadow: 5px 5px 0 rgba(43, 36, 26, .18);
+      }
+      .mole-start.secondary {
+        background: #8b5d2e;
+      }
+      .mole-start:active,
+      .mole-option:active,
+      .mole-hole:active {
+        transform: translateY(2px);
+        box-shadow: 2px 2px 0 rgba(43, 36, 26, .14);
+      }
+      .mole-status {
+        min-height: 58px;
+        padding: 14px 16px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: white;
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.45;
+      }
+      .mole-arenas {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .mole-arenas.single {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .mole-player {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+        border: 4px solid var(--ink);
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(255, 245, 182, .92), rgba(191, 232, 207, .84)),
+          #eaf5ca;
+        box-shadow: 6px 6px 0 rgba(43, 36, 26, .12);
+      }
+      .mole-player.finished {
+        background:
+          linear-gradient(180deg, rgba(255, 215, 106, .88), rgba(255, 253, 247, .9)),
+          #fff;
+      }
+      .mole-player-head {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+        align-items: center;
+      }
+      .mole-player-name {
+        margin: 0;
+        font-size: 26px;
+        line-height: 1.1;
+      }
+      .mole-stat {
+        min-width: 86px;
+        padding: 8px 10px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: white;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 900;
+      }
+      .mole-question {
+        min-height: 74px;
+        display: grid;
+        place-items: center;
+        padding: 12px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: #fffdf7;
+        text-align: center;
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 900;
+        line-height: 1.12;
+      }
+      .mole-field {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(78px, 1fr));
+        gap: 12px;
+        padding: 14px;
+        border: 4px solid var(--ink);
+        border-radius: 22px;
+        background:
+          linear-gradient(90deg, rgba(85, 138, 64, .28) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(85, 138, 64, .26) 1px, transparent 1px),
+          #77bd6d;
+        background-size: 38px 38px;
+      }
+      .mole-hole {
+        position: relative;
+        min-height: 104px;
+        border: 0;
+        border-radius: 24px;
+        background: transparent;
+        color: var(--ink);
+        cursor: default;
+      }
+      .mole-hole::before {
+        content: "";
+        position: absolute;
+        left: 10%;
+        right: 10%;
+        bottom: 10px;
+        height: 34px;
+        border: 4px solid rgba(43, 36, 26, .94);
+        border-radius: 50%;
+        background: #5a341c;
+        box-shadow: inset 0 8px 0 rgba(0, 0, 0, .22);
+      }
+      .mole-hole.up {
+        cursor: pointer;
+      }
+      .mole-head {
+        position: absolute;
+        left: 50%;
+        bottom: 22px;
+        width: min(82px, 82%);
+        min-height: 74px;
+        display: grid;
+        place-items: center;
+        padding-top: 12px;
+        border: 4px solid var(--ink);
+        border-radius: 44% 44% 36% 36%;
+        background: #9a6a35;
+        transform: translateX(-50%);
+        animation: mole-pop .22s ease-out both;
+        box-shadow: inset 0 -10px 0 rgba(43, 36, 26, .18);
+      }
+      .mole-face {
+        font-size: 30px;
+        line-height: 1;
+      }
+      .mole-number {
+        position: absolute;
+        top: -24px;
+        left: 50%;
+        min-width: 52px;
+        padding: 4px 8px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: var(--yellow);
+        font-size: 24px;
+        font-weight: 900;
+        transform: translateX(-50%);
+      }
+      .mole-feedback {
+        min-height: 52px;
+        padding: 12px 14px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: white;
+        color: var(--muted);
+        font-size: 17px;
+        font-weight: 900;
+        line-height: 1.4;
+      }
+      .mole-feedback.correct {
+        background: #e7f7cd;
+        color: #245a2b;
+      }
+      .mole-feedback.wrong {
+        background: #fff0c8;
+        color: #6f451e;
+      }
+      @keyframes mole-pop {
+        from { transform: translateX(-50%) translateY(34px) scale(.92); opacity: .2; }
+        to { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mole-head {
+          animation: none;
+        }
+      }
       .quiet-board {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -288,11 +591,36 @@
         overflow: hidden;
       }
       .question-preview::before {
+        content: "✿";
+        position: absolute;
+        left: 18px;
+        bottom: 14px;
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        background: var(--pink);
+        color: var(--ink);
+        font-size: 24px;
+        font-weight: 900;
+        opacity: .72;
+      }
+      .question-preview::after {
         content: "";
         position: absolute;
-        inset: 0;
-        background: url("assets/quiet-book-backdrop.png") center / cover no-repeat;
-        opacity: .1;
+        right: 14px;
+        top: 14px;
+        width: 74px;
+        height: 42px;
+        border: 3px solid var(--ink);
+        border-radius: 18px 18px 8px 8px;
+        background:
+          linear-gradient(90deg, transparent 46%, rgba(43, 36, 26, .22) 46% 54%, transparent 54%),
+          var(--yellow);
+        transform: rotate(5deg);
+        opacity: .62;
       }
       .asset-photo {
         width: min(760px, 100%);
@@ -302,6 +630,126 @@
         border: 4px solid var(--ink);
         border-radius: 22px;
         box-shadow: 7px 7px 0 rgba(43, 36, 26, .14);
+      }
+      .story-card {
+        width: min(760px, 100%);
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        align-items: center;
+        padding: 10px 18px;
+      }
+      .story-icon {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 18px;
+        background: var(--yellow);
+        font-size: 28px;
+        font-weight: 900;
+        box-shadow: 4px 4px 0 rgba(43, 36, 26, .12);
+      }
+      .story-text {
+        color: var(--muted);
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1.45;
+      }
+      .stick-display {
+        width: min(760px, 100%);
+        display: grid;
+        gap: 22px;
+        justify-items: center;
+        padding: 10px;
+      }
+      .stick-display-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .stick-bundle {
+        display: flex;
+        gap: 3px;
+        align-items: flex-end;
+        padding: 8px 10px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: #fff3bc;
+      }
+      .stick-bundle .mini-stick {
+        width: 8px;
+        height: 74px;
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+        background: #ffe9a8;
+      }
+      .loose-stick-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+      .loose-stick {
+        width: 14px;
+        height: 82px;
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        background: #fff3bc;
+      }
+      .loose-stick.added {
+        background: var(--green);
+      }
+      .hundred-mini {
+        display: grid;
+        grid-template-columns: repeat(3, 72px);
+        gap: 8px;
+        justify-content: center;
+      }
+      .hundred-mini span {
+        min-height: 52px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--ink);
+        border-radius: 12px;
+        background: white;
+        font-size: 22px;
+        font-weight: 900;
+      }
+      .hundred-mini .center {
+        background: var(--yellow);
+      }
+      .shape-scene {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
+        width: min(760px, 100%);
+        padding: 24px;
+        border: 4px solid var(--ink);
+        border-radius: 20px;
+        background: #fff;
+      }
+      .shape-item {
+        width: 64px;
+        height: 64px;
+        border: 4px solid var(--ink);
+        background: var(--green);
+      }
+      .shape-circle { border-radius: 999px; background: var(--pink); }
+      .shape-square { background: var(--yellow); }
+      .shape-rect { width: 92px; background: var(--blue); }
+      .shape-triangle {
+        width: 0;
+        height: 0;
+        border-left: 36px solid transparent;
+        border-right: 36px solid transparent;
+        border-bottom: 66px solid var(--orange);
+        background: transparent;
+        border-top: 0;
       }
       .compare-board {
         display: grid;
@@ -1085,6 +1533,15 @@
         .question-preview {
           min-height: 300px;
         }
+        .mole-controls {
+          grid-template-columns: 1fr;
+        }
+        .mole-start {
+          width: 100%;
+        }
+        .mole-arenas {
+          grid-template-columns: 1fr;
+        }
         .dot-demo span {
           width: 64px;
           height: 64px;
@@ -1211,6 +1668,63 @@
           grid-template-columns: 1fr;
           gap: 12px;
         }
+        .mole-entry {
+          min-height: 160px;
+          padding-right: 16px;
+          padding-bottom: 96px;
+        }
+        .mole-entry::after {
+          right: 18px;
+          bottom: 14px;
+        }
+        .mole-controls {
+          padding: 12px;
+          border-width: 3px;
+          border-radius: 18px;
+        }
+        .mole-segmented,
+        .mole-segmented.two {
+          grid-template-columns: 1fr;
+        }
+        .mole-option,
+        .mole-start {
+          min-height: 54px;
+          font-size: 18px;
+        }
+        .mole-player {
+          padding: 12px;
+          border-width: 3px;
+          border-radius: 18px;
+        }
+        .mole-player-head {
+          grid-template-columns: 1fr;
+        }
+        .mole-stat {
+          width: 100%;
+        }
+        .mole-question {
+          min-height: 66px;
+          border-width: 3px;
+          font-size: 28px;
+        }
+        .mole-field {
+          gap: 8px;
+          padding: 10px;
+          border-width: 3px;
+          border-radius: 18px;
+        }
+        .mole-hole {
+          min-height: 92px;
+        }
+        .mole-head {
+          width: min(70px, 86%);
+          min-height: 66px;
+          border-width: 3px;
+        }
+        .mole-number {
+          min-width: 46px;
+          font-size: 21px;
+        }
         .question-jump {
           min-height: 96px;
           border-width: 3px;
@@ -1259,23 +1773,61 @@
         <aside class="reward-book">
           <strong>奖励册</strong>
           <div class="sticker-row" id="stickerRow"></div>
+          <div class="medal-total" id="medalTotal">总奖章：0</div>
+          <button class="new-set-button" id="newQuestionSetButton" type="button">换一组题</button>
         </aside>
       </section>
 
       <section class="book-shell">
         <nav class="tabs" aria-label="安静书页面">
-          <button class="tab active" data-page="sticks" type="button">做题</button>
-          <button class="tab" data-page="home" type="button">题目目录</button>
+          <button class="tab" data-page="sticks" type="button">做题</button>
+          <button class="tab active" data-page="home" type="button">题目目录</button>
+          <button class="tab" data-page="mole" type="button">数学打地鼠</button>
         </nav>
 
-        <section class="page" id="page-home">
+        <section class="page active" id="page-home">
           <span class="label">题目目录</span>
           <h2 class="page-title">点一道题，马上开始做</h2>
           <p class="intro">可以按顺序闯关，也可以直接点想练的题。做对以后，上方奖励册会亮起奖章。</p>
+          <div class="module-grid">
+            <button class="module-card mole-entry" id="moleEntryButton" type="button">
+              <h3>数学打地鼠</h3>
+              <p>1组或2组同屏比赛。看清算式，点中头顶正确数字的地鼠。</p>
+              <span class="play-tag">进入对战小游戏</span>
+            </button>
+          </div>
           <div class="question-menu" id="questionMenu"></div>
         </section>
 
-        <section class="page active" id="page-sticks">
+        <section class="page" id="page-mole">
+          <span class="label">数学打地鼠</span>
+          <h2 class="page-title">看算式，找正确地鼠</h2>
+          <p class="intro">每组遇到同一批计算题，但顺序会打乱。答对加 1 分，最后比分数；分数一样就比谁用时更短。</p>
+          <div class="mole-game-shell">
+            <div class="mole-controls" aria-label="数学打地鼠设置">
+              <div class="mole-control-group">
+                <span class="mole-control-title">对战人数</span>
+                <div class="mole-segmented two" id="molePlayerOptions">
+                  <button class="mole-option active" type="button" data-players="1">1组练习</button>
+                  <button class="mole-option" type="button" data-players="2">2组对战</button>
+                </div>
+              </div>
+              <div class="mole-control-group">
+                <span class="mole-control-title">一轮题量</span>
+                <div class="mole-segmented" id="moleCountOptions">
+                  <button class="mole-option active" type="button" data-count="5">5题</button>
+                  <button class="mole-option" type="button" data-count="10">10题</button>
+                  <button class="mole-option" type="button" data-count="15">15题</button>
+                </div>
+              </div>
+              <button class="mole-start" id="moleStartButton" type="button">开始游戏</button>
+            </div>
+            <div class="mole-status" id="moleStatus">先选组数和题量，再点击开始。准备好后，地鼠会带着答案冒出来。</div>
+            <div class="mole-arenas single" id="moleArenas"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-sticks">
           <span class="label" id="questionLabel">当前题目</span>
           <h2 class="page-title" id="questionTitle">37 + 23 = ?</h2>
           <span class="progress-pill" id="questionProgress">第 1 / 10 题</span>
@@ -1441,6 +1993,7 @@
       <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
     </main>
 
+    <script src="quiet-book-generator.js"></script>
     <script>
       const tabs = Array.from(document.querySelectorAll(".tab"));
       const pages = Array.from(document.querySelectorAll(".page"));
@@ -1457,6 +2010,308 @@
           showPage(tab.dataset.page);
         });
       });
+
+      const moleEntryButton = document.querySelector("#moleEntryButton");
+      const molePlayerOptions = document.querySelector("#molePlayerOptions");
+      const moleCountOptions = document.querySelector("#moleCountOptions");
+      const moleStartButton = document.querySelector("#moleStartButton");
+      const moleStatus = document.querySelector("#moleStatus");
+      const moleArenas = document.querySelector("#moleArenas");
+      const moleEncouragements = [
+        "很好，眼睛找到正确答案啦！",
+        "答对了！小地鼠送你 1 分。",
+        "真稳，先算再点就很棒。",
+        "又抓到正确地鼠啦！"
+      ];
+      const moleHints = [
+        "没关系，下一题先在心里算一遍再点。",
+        "差一点点，注意个位和十位。",
+        "别急，先看清加号和减号。",
+        "继续试试，你已经知道要检查答案了。"
+      ];
+      let moleSettings = { players: 1, count: 5 };
+      let moleGame = null;
+      let moleTimer = null;
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function shuffle(items) {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = randomInt(0, i);
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      function setSegmentedValue(container, key, value) {
+        container.querySelectorAll(".mole-option").forEach((button) => {
+          const isActive = button.dataset[key] === String(value);
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+      }
+
+      function makeMoleQuestion() {
+        const type = randomInt(1, 5);
+        let text = "";
+        let answer = 0;
+        if (type === 1) {
+          const a = randomInt(4, 78);
+          const b = randomInt(2, 100 - a);
+          answer = a + b;
+          text = `${a} + ${b} = ?`;
+        } else if (type === 2) {
+          const a = randomInt(10, 100);
+          const b = randomInt(1, a);
+          answer = a - b;
+          text = `${a} - ${b} = ?`;
+        } else if (type === 3) {
+          const a = randomInt(2, 45);
+          const b = randomInt(2, 35);
+          const c = randomInt(1, Math.max(1, 100 - a - b));
+          answer = a + b + c;
+          text = `${a} + ${b} + ${c} = ?`;
+        } else if (type === 4) {
+          const a = randomInt(25, 100);
+          const b = randomInt(1, Math.min(35, a - 1));
+          const c = randomInt(1, Math.min(25, a - b));
+          answer = a - b - c;
+          text = `${a} - ${b} - ${c} = ?`;
+        } else {
+          const a = randomInt(12, 76);
+          const b = randomInt(2, 100 - a);
+          const sum = a + b;
+          const c = randomInt(1, Math.min(35, sum));
+          answer = sum - c;
+          text = `${a} + ${b} - ${c} = ?`;
+        }
+        return { text, answer };
+      }
+
+      function makeMoleQuestionSet(count) {
+        const seen = new Set();
+        const questionSet = [];
+        while (questionSet.length < count) {
+          const question = makeMoleQuestion();
+          if (question.answer < 0 || question.answer > 100) continue;
+          if (seen.has(question.text)) continue;
+          seen.add(question.text);
+          questionSet.push(question);
+        }
+        return questionSet;
+      }
+
+      function makeMoleOptions(answer) {
+        const options = new Set([answer]);
+        const offsets = shuffle([-12, -10, -5, -3, -2, -1, 1, 2, 3, 5, 10, 12]);
+        offsets.forEach((offset) => {
+          const candidate = answer + offset;
+          if (candidate >= 0 && candidate <= 100) options.add(candidate);
+        });
+        while (options.size < 4) {
+          options.add(randomInt(0, 100));
+        }
+        return shuffle(Array.from(options).slice(0, 4));
+      }
+
+      function formatMoleTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function createMolePlayer(id, questionOrder) {
+        return {
+          id,
+          name: id === 1 ? "第1组" : "第2组",
+          order: questionOrder,
+          current: 0,
+          score: 0,
+          elapsed: 0,
+          startTime: Date.now(),
+          finished: false,
+          locked: false,
+          feedback: "等地鼠冒出来，点正确数字。"
+        };
+      }
+
+      function renderMoleArenas() {
+        if (!moleGame) {
+          moleArenas.innerHTML = "";
+          moleArenas.classList.add("single");
+          return;
+        }
+        moleArenas.classList.toggle("single", moleGame.players.length === 1);
+        moleArenas.innerHTML = "";
+        moleGame.players.forEach((player) => {
+          const question = player.order[player.current];
+          const article = document.createElement("article");
+          article.className = `mole-player${player.finished ? " finished" : ""}`;
+          article.dataset.playerId = String(player.id);
+          article.innerHTML = `
+            <div class="mole-player-head">
+              <h3 class="mole-player-name">${player.name}</h3>
+              <div class="mole-stat">时间 ${formatMoleTime(player.elapsed)}</div>
+              <div class="mole-stat">得分 ${player.score}</div>
+            </div>
+            <div class="mole-question">${player.finished ? "本组完成啦！" : question.text}</div>
+            <div class="mole-field" aria-label="${player.name} 的九宫格田地"></div>
+            <div class="mole-feedback">${player.feedback}</div>
+          `;
+          const field = article.querySelector(".mole-field");
+          const activeHoles = new Map();
+          if (!player.finished) {
+            const holeIndexes = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8]).slice(0, 4);
+            const options = makeMoleOptions(question.answer);
+            holeIndexes.forEach((holeIndex, optionIndex) => {
+              activeHoles.set(holeIndex, options[optionIndex]);
+            });
+          }
+          for (let i = 0; i < 9; i += 1) {
+            const hole = document.createElement("button");
+            hole.className = "mole-hole";
+            hole.type = "button";
+            hole.setAttribute("aria-label", `洞 ${i + 1}`);
+            if (activeHoles.has(i)) {
+              const value = activeHoles.get(i);
+              hole.classList.add("up");
+              hole.innerHTML = `
+                <span class="mole-head">
+                  <span class="mole-number">${value}</span>
+                  <span class="mole-face" aria-hidden="true">🐹</span>
+                </span>
+              `;
+              hole.setAttribute("aria-label", `${player.name} 选择答案 ${value}`);
+              hole.addEventListener("click", () => handleMoleAnswer(player.id, value, hole));
+            }
+            field.appendChild(hole);
+          }
+          moleArenas.appendChild(article);
+        });
+      }
+
+      function updateMoleTimers() {
+        if (!moleGame) return;
+        const now = Date.now();
+        moleGame.players.forEach((player) => {
+          if (!player.finished) player.elapsed = now - player.startTime;
+        });
+        moleArenas.querySelectorAll(".mole-player").forEach((card) => {
+          const player = moleGame.players.find((item) => item.id === Number(card.dataset.playerId));
+          if (!player) return;
+          const stats = card.querySelectorAll(".mole-stat");
+          if (stats[0]) stats[0].textContent = `时间 ${formatMoleTime(player.elapsed)}`;
+          if (stats[1]) stats[1].textContent = `得分 ${player.score}`;
+        });
+      }
+
+      function finishMoleGameIfReady() {
+        if (!moleGame || !moleGame.players.every((player) => player.finished)) return;
+        clearInterval(moleTimer);
+        moleTimer = null;
+        const ranked = [...moleGame.players].sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.elapsed - b.elapsed;
+        });
+        if (ranked.length === 1) {
+          moleStatus.textContent = `完成！得分 ${ranked[0].score} / ${moleGame.count}，用时 ${formatMoleTime(ranked[0].elapsed)}。今天的计算小地鼠被你抓住啦！`;
+          return;
+        }
+        const winner = ranked[0];
+        const runner = ranked[1];
+        const sameScore = winner.score === runner.score;
+        moleStatus.textContent = sameScore
+          ? `${winner.name} 获胜！两组都是 ${winner.score} 分，${winner.name} 用时更短：${formatMoleTime(winner.elapsed)}。`
+          : `${winner.name} 获胜！${winner.name} ${winner.score} 分，${runner.name} ${runner.score} 分。`;
+      }
+
+      function handleMoleAnswer(playerId, selectedValue, target) {
+        if (!moleGame) return;
+        const player = moleGame.players.find((item) => item.id === playerId);
+        if (!player || player.locked || player.finished) return;
+        player.locked = true;
+        const question = player.order[player.current];
+        const correct = selectedValue === question.answer;
+        const feedbackClass = correct ? "correct" : "wrong";
+        if (correct) player.score += 1;
+        player.feedback = correct
+          ? moleEncouragements[randomInt(0, moleEncouragements.length - 1)]
+          : `${moleHints[randomInt(0, moleHints.length - 1)]} 正确答案是 ${question.answer}。`;
+        const card = target.closest(".mole-player");
+        const feedback = card.querySelector(".mole-feedback");
+        feedback.textContent = player.feedback;
+        feedback.classList.add(feedbackClass);
+        target.classList.add(feedbackClass);
+        setTimeout(() => {
+          player.current += 1;
+          player.locked = false;
+          if (player.current >= player.order.length) {
+            player.finished = true;
+            player.elapsed = Date.now() - player.startTime;
+            player.feedback = `${player.name} 完成啦，得分 ${player.score} / ${moleGame.count}。`;
+          } else {
+            player.feedback = "下一只地鼠来了，先算再点。";
+          }
+          renderMoleArenas();
+          finishMoleGameIfReady();
+        }, 720);
+      }
+
+      function startMoleGame() {
+        clearInterval(moleTimer);
+        const baseQuestions = makeMoleQuestionSet(moleSettings.count);
+        const players = [];
+        let firstOrderKey = "";
+        for (let i = 1; i <= moleSettings.players; i += 1) {
+          let order = shuffle(baseQuestions);
+          if (i === 1) {
+            firstOrderKey = order.map((question) => question.text).join("|");
+          } else if (baseQuestions.length > 1) {
+            while (order.map((question) => question.text).join("|") === firstOrderKey) {
+              order = shuffle(baseQuestions);
+            }
+          }
+          players.push(createMolePlayer(i, order));
+        }
+        moleGame = {
+          count: moleSettings.count,
+          questions: baseQuestions,
+          players
+        };
+        moleStatus.textContent = moleSettings.players === 1
+          ? `单组练习开始！这一轮有 ${moleSettings.count} 道计算题。`
+          : `两组对战开始！两组题目一样，出现顺序不一样。`;
+        moleStartButton.textContent = "重新开始";
+        moleStartButton.classList.add("secondary");
+        renderMoleArenas();
+        moleTimer = setInterval(updateMoleTimers, 250);
+      }
+
+      moleEntryButton.addEventListener("click", () => {
+        showPage("mole");
+      });
+
+      molePlayerOptions.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-players]");
+        if (!button) return;
+        moleSettings.players = Number(button.dataset.players);
+        setSegmentedValue(molePlayerOptions, "players", moleSettings.players);
+      });
+
+      moleCountOptions.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-count]");
+        if (!button) return;
+        moleSettings.count = Number(button.dataset.count);
+        setSegmentedValue(moleCountOptions, "count", moleSettings.count);
+      });
+
+      moleStartButton.addEventListener("click", startMoleGame);
+      setSegmentedValue(molePlayerOptions, "players", moleSettings.players);
+      setSegmentedValue(moleCountOptions, "count", moleSettings.count);
 
       function makeTenGroup() {
         const group = document.createElement("div");
@@ -1475,7 +2330,7 @@
         return stick;
       }
 
-      const questions = [
+      let questions = window.QuietBookQuestionGenerator ? window.QuietBookQuestionGenerator.generateQuestionSet() : [
         {
           label: "口算",
           title: "37 + 23 = ?",
@@ -1704,6 +2559,8 @@
       const tapPanel = document.querySelector("#tapPanel");
       const questionMenu = document.querySelector("#questionMenu");
       const stickerRow = document.querySelector("#stickerRow");
+      const medalTotal = document.querySelector("#medalTotal");
+      const newQuestionSetButton = document.querySelector("#newQuestionSetButton");
       const rewardModal = document.querySelector("#rewardModal");
       const nextQuestionButton = document.querySelector("#nextQuestionButton");
       const grandRewardModal = document.querySelector("#grandRewardModal");
@@ -1712,31 +2569,44 @@
       const rewardText = document.querySelector("#rewardText");
       const medal = document.querySelector("#medal");
       const completedQuestions = new Set();
+      const medalStorageKey = "quietBookMathTotalMedals";
+      let totalMedals = Number(localStorage.getItem(medalStorageKey) || 0);
       let pendingGrandReward = false;
 
-      questions.forEach((question, index) => {
-        const sticker = document.createElement("span");
-        sticker.className = "sticker";
-        sticker.dataset.index = String(index);
-        sticker.textContent = `${index + 1}`;
-        sticker.title = question.label;
-        stickerRow.appendChild(sticker);
+      function updateMedalTotal() {
+        medalTotal.textContent = `总奖章：${totalMedals}`;
+        localStorage.setItem(medalStorageKey, String(totalMedals));
+      }
 
-        const jumpButton = document.createElement("button");
-        jumpButton.className = "question-jump";
-        jumpButton.type = "button";
-        jumpButton.dataset.index = String(index);
-        jumpButton.innerHTML = `
-          <span class="jump-meta"><span>第 ${index + 1} 题</span><span>${question.label}</span></span>
-          <span class="jump-title">${question.title}</span>
-        `;
-        jumpButton.addEventListener("click", () => {
-          currentQuestionIndex = index;
-          renderQuestion(questions[currentQuestionIndex]);
-          showPage("sticks");
+      function renderQuestionMenu() {
+        stickerRow.innerHTML = "";
+        questionMenu.innerHTML = "";
+        questions.forEach((question, index) => {
+          const sticker = document.createElement("span");
+          sticker.className = "sticker";
+          sticker.dataset.index = String(index);
+          sticker.textContent = `${index + 1}`;
+          sticker.title = question.label;
+          if (completedQuestions.has(index)) sticker.classList.add("earned");
+          stickerRow.appendChild(sticker);
+
+          const jumpButton = document.createElement("button");
+          jumpButton.className = "question-jump";
+          if (completedQuestions.has(index)) jumpButton.classList.add("done");
+          jumpButton.type = "button";
+          jumpButton.dataset.index = String(index);
+          jumpButton.innerHTML = `
+            <span class="jump-meta"><span>第 ${index + 1} 题</span><span>${question.label}</span></span>
+            <span class="jump-title">${question.title}</span>
+          `;
+          jumpButton.addEventListener("click", () => {
+            currentQuestionIndex = index;
+            renderQuestion(questions[currentQuestionIndex]);
+            showPage("sticks");
+          });
+          questionMenu.appendChild(jumpButton);
         });
-        questionMenu.appendChild(jumpButton);
-      });
+      }
 
       function makeNumberTile(text, extraClass = "") {
         return `<span class="number-tile ${extraClass}">${text}</span>`;
@@ -1757,8 +2627,10 @@
         if (visual.type === "photo") {
           return `
             <div class="visual-stage">
-              <img class="asset-photo" src="${visual.src}" alt="" />
-              <div class="visual-caption">${visual.caption}</div>
+              <div class="story-card">
+                <div class="story-icon" aria-hidden="true">题</div>
+                <div class="story-text">${visual.caption || "读题，找数字，再列式。"}</div>
+              </div>
             </div>
           `;
         }
@@ -1831,10 +2703,23 @@
           `;
         }
         if (visual.type === "sticks") {
+          const bundles = Array.from({ length: visual.tens || 0 }, () => {
+            const sticks = Array.from({ length: 10 }, () => '<span class="mini-stick"></span>').join("");
+            return `<div class="stick-bundle" aria-label="一组十根小棒">${sticks}</div>`;
+          }).join("");
+          const ones = Array.from({ length: visual.ones || 0 }, () => '<span class="loose-stick"></span>').join("");
+          const added = Array.from({ length: visual.addOnes || 0 }, () => '<span class="loose-stick added"></span>').join("");
           return `
             <div class="visual-stage">
-              <img class="asset-photo" src="assets/real-sticks-cards.png" alt="" />
-              <div class="visual-caption">先数个位小棒，满 10 根就想成 1 个十。</div>
+              <div class="stick-display">
+                <div class="stick-display-row">${bundles}</div>
+                <div class="stick-display-row">
+                  <div class="loose-stick-row">${ones}</div>
+                  <strong style="font-size:34px;">+</strong>
+                  <div class="loose-stick-row">${added}</div>
+                </div>
+              </div>
+              <div class="visual-caption">上面是十位小屋，下面是个位小棒。满 10 根就想成 1 个十。</div>
             </div>
           `;
         }
@@ -1866,6 +2751,45 @@
             <div class="visual-stage">
               <div class="apple-row">${groups}</div>
               <div class="visual-caption">每次运 8 箱，看看 24 里面有几个 8。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "story") {
+          return `
+            <div class="visual-stage">
+              <div class="story-card">
+                <div class="story-icon" aria-hidden="true">${visual.icon || "题"}</div>
+                <div class="story-text">读一读题目，先找总数，再找已知部分。</div>
+              </div>
+            </div>
+          `;
+        }
+        if (visual.type === "hundred") {
+          const center = Number(visual.center);
+          return `
+            <div class="visual-stage">
+              <div class="hundred-mini" aria-label="百数表九宫格">
+                <span></span><span>${center - 10}</span><span></span>
+                <span>${center - 1}</span><span class="center">${center}</span><span>${center + 1}</span>
+                <span></span><span>${center + 10}</span><span></span>
+              </div>
+              <div class="visual-caption">中间是 ${center}，上少 10，下多 10，左少 1，右多 1。</div>
+            </div>
+          `;
+        }
+        if (visual.type === "shapes") {
+          const shapeMap = {
+            "长方形": "shape-rect",
+            "正方形": "shape-square",
+            "圆形": "shape-circle",
+            "三角形": "shape-triangle"
+          };
+          const shapes = visual.shapes.flatMap(([name, count]) => Array.from({ length: count }, () => name));
+          const shapeItems = shapes.sort(() => Math.random() - 0.5).map((name) => `<span class="shape-item ${shapeMap[name]}" title="${name}"></span>`).join("");
+          return `
+            <div class="visual-stage">
+              <div class="shape-scene">${shapeItems}</div>
+              <div class="visual-caption">先按形状分一分，再数题目问的图形。</div>
             </div>
           `;
         }
@@ -1948,6 +2872,8 @@
         }
       }
 
+      updateMedalTotal();
+      renderQuestionMenu();
       renderQuestion(questions[currentQuestionIndex]);
 
       questionAction.addEventListener("click", () => {
@@ -1975,7 +2901,12 @@
         if (answer === currentQuestion.answer) {
           questionAnswerPanel.classList.add("correct");
           if (target) target.classList.add("correct");
+          const isFirstCorrect = !completedQuestions.has(currentQuestionIndex);
           completedQuestions.add(currentQuestionIndex);
+          if (isFirstCorrect) {
+            totalMedals += 1;
+            updateMedalTotal();
+          }
           const sticker = stickerRow.querySelector(`[data-index="${currentQuestionIndex}"]`);
           if (sticker) sticker.classList.add("earned");
           const jumpButton = questionMenu.querySelector(`[data-index="${currentQuestionIndex}"]`);
@@ -2011,6 +2942,23 @@
       questionAnswerInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") checkQuestionAnswer();
       });
+
+      function createNewQuestionSet() {
+        if (!window.QuietBookQuestionGenerator) return;
+        questions = window.QuietBookQuestionGenerator.generateQuestionSet();
+        completedQuestions.clear();
+        pendingGrandReward = false;
+        currentQuestionIndex = 0;
+        rewardModal.classList.remove("show");
+        grandRewardModal.classList.remove("show");
+        rewardModal.setAttribute("aria-hidden", "true");
+        grandRewardModal.setAttribute("aria-hidden", "true");
+        renderQuestionMenu();
+        renderQuestion(questions[currentQuestionIndex]);
+        showPage("sticks");
+      }
+
+      newQuestionSetButton.addEventListener("click", createNewQuestionSet);
 
       nextQuestionButton.addEventListener("click", () => {
         rewardModal.classList.remove("show");
