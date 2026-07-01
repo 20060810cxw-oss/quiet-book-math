@@ -3021,7 +3021,22 @@
 
       document.querySelectorAll(".drag-item").forEach((item) => {
         item.addEventListener("dragstart", () => { draggedCard = item; });
+        item.addEventListener("click", () => {
+          handleStaticDragAnswer(item);
+        });
       });
+
+      function handleStaticDragAnswer(card) {
+        const value = Number(card.dataset.value);
+        if (value > 10) {
+          dropItems.appendChild(card);
+          const count = dropItems.querySelectorAll(".drag-item").length;
+          dragResult.textContent = count >= 3 ? "完成！大于 10 的答案已经放进口袋。" : `已经放入 ${count} 张正确答案卡。`;
+        } else {
+          dragResult.textContent = `${value} 没有大于 10，先放回答案卡区。`;
+        }
+      }
+
       dropZone.addEventListener("dragover", (event) => {
         event.preventDefault();
         dropZone.classList.add("over");
@@ -3031,14 +3046,7 @@
         event.preventDefault();
         dropZone.classList.remove("over");
         if (!draggedCard) return;
-        const value = Number(draggedCard.dataset.value);
-        if (value > 10) {
-          dropItems.appendChild(draggedCard);
-          const count = dropItems.querySelectorAll(".drag-item").length;
-          dragResult.textContent = count >= 3 ? "完成！大于 10 的答案已经放进口袋。" : `已经放入 ${count} 张正确答案卡。`;
-        } else {
-          dragResult.textContent = `${value} 没有大于 10，先放回答案卡区。`;
-        }
+        handleStaticDragAnswer(draggedCard);
         draggedCard = null;
       });
 

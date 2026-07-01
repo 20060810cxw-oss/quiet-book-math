@@ -14,14 +14,17 @@
   };
 
   function uniqueOptions(answer, min = 0, max = 100) {
-    const values = new Set([answer]);
+    const distractors = new Set();
     const offsets = shuffle([-10, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 10]);
     offsets.forEach((offset) => {
       const value = answer + offset;
-      if (value >= min && value <= max) values.add(value);
+      if (value >= min && value <= max && value !== answer) distractors.add(value);
     });
-    while (values.size < 4) values.add(rand(min, max));
-    return shuffle([...values]).slice(0, 4);
+    while (distractors.size < 3) {
+      const value = rand(min, max);
+      if (value !== answer) distractors.add(value);
+    }
+    return shuffle([answer, ...shuffle([...distractors]).slice(0, 3)]);
   }
 
   function expressionValue(expression) {
