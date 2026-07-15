@@ -1993,7 +1993,7 @@
       <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
     </main>
 
-    <script src="quiet-book-generator.js"></script>
+    <script src="quiet-book-generator.js?v=20260710-answer-options-fix"></script>
     <script>
       const tabs = Array.from(document.querySelectorAll(".tab"));
       const pages = Array.from(document.querySelectorAll(".page"));
@@ -2540,6 +2540,56 @@
           visual: { type: "compare", left: "18 - 9", right: "19 - 8" }
         }
       ];
+      const optionModes = new Set(["choice", "drag", "tap", "compare"]);
+
+      function makeSafeOptions(answer, existingOptions = []) {
+        if (answer === ">" || answer === "<" || answer === "=") {
+          return [">", "<", "="];
+        }
+        if (answer === "对" || answer === "错") {
+          return ["对", "错"];
+        }
+        const numericAnswer = Number(answer);
+        if (!Number.isFinite(numericAnswer)) {
+          return Array.from(new Set([answer, ...existingOptions])).slice(0, 4);
+        }
+        const min = Math.max(0, numericAnswer <= 10 ? 0 : numericAnswer - 20);
+        const max = Math.min(100, numericAnswer + 20);
+        const distractors = new Set();
+        existingOptions.forEach((option) => {
+          const value = Number(option);
+          if (Number.isFinite(value) && value !== numericAnswer && value >= 0 && value <= 100) {
+            distractors.add(value);
+          }
+        });
+        [-10, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 10].forEach((offset) => {
+          const value = numericAnswer + offset;
+          if (value >= 0 && value <= 100 && value !== numericAnswer) distractors.add(value);
+        });
+        for (let value = min; distractors.size < 3 && value <= max; value += 1) {
+          if (value !== numericAnswer) distractors.add(value);
+        }
+        return shuffle([numericAnswer, ...Array.from(distractors).slice(0, 3)]);
+      }
+
+      function repairQuestionOptions(question) {
+        if (!optionModes.has(question.mode)) return question;
+        const options = Array.isArray(question.options) ? question.options : [];
+        const uniqueOptions = Array.from(new Set(options));
+        if (uniqueOptions.includes(question.answer) && uniqueOptions.length === options.length) {
+          return question;
+        }
+        return {
+          ...question,
+          options: makeSafeOptions(question.answer, uniqueOptions)
+        };
+      }
+
+      function normalizeQuestionSet(questionSet) {
+        return questionSet.map(repairQuestionOptions);
+      }
+
+      questions = normalizeQuestionSet(questions);
       let currentQuestionIndex = 0;
 
       const questionLabel = document.querySelector("#questionLabel");
@@ -2945,7 +2995,7 @@
 
       function createNewQuestionSet() {
         if (!window.QuietBookQuestionGenerator) return;
-        questions = window.QuietBookQuestionGenerator.generateQuestionSet();
+        questions = normalizeQuestionSet(window.QuietBookQuestionGenerator.generateQuestionSet());
         completedQuestions.clear();
         pendingGrandReward = false;
         currentQuestionIndex = 0;

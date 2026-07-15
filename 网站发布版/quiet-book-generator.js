@@ -20,8 +20,13 @@
       const value = answer + offset;
       if (value >= min && value <= max && value !== answer) distractors.add(value);
     });
-    while (distractors.size < 3) {
+    let guard = 0;
+    while (distractors.size < 3 && guard < 200) {
       const value = rand(min, max);
+      if (value !== answer) distractors.add(value);
+      guard += 1;
+    }
+    for (let value = 0; distractors.size < 3 && value <= 100; value += 1) {
       if (value !== answer) distractors.add(value);
     }
     return shuffle([answer, ...shuffle([...distractors]).slice(0, 3)]);
