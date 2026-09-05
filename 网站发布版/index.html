@@ -1761,6 +1761,48 @@
         .hundred-grid, .paint-grid { gap: 3px; }
         .num-cell, .paint-cell { font-size: 12px; border-radius: 6px; }
       }
+      .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 490px); align-items: center; }
+      h1 { font-size: 44px; }
+      .sticker-row { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
+      .sticker { min-width: 0; width: 100%; }
+      .question-preview::before, .question-preview::after { display: none; }
+      .grade-label { color: #326842; font-weight: 700; font-size: 18px; }
+      .group-scene { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .object-group { display: grid; grid-template-columns: repeat(3, 28px); gap: 4px; padding: 10px; border: 2px solid #81a66d; border-radius: 8px; background: #eff7ec; }
+      .group-object { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 30px; font-size: 24px; color: #46743e; }
+      .group-object.removed { opacity: .55; }
+      .group-object.removed::after { content: ""; position: absolute; width: 32px; height: 3px; background: #ac3546; transform: rotate(-45deg); }
+      .extra-objects { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin-top: 16px; padding: 10px; border-top: 2px dashed #ba923f; }
+      .group-object.added { color: #9a661c; }
+      .price-table { border-collapse: collapse; width: min(100%, 450px); margin: auto; font-size: 20px; }
+      .price-table caption { padding: 8px; font-weight: 700; }
+      .price-table th, .price-table td { padding: 10px; border: 1px solid #90a98c; text-align: center; }
+      .price-table thead { background: #e3efd9; }
+      .price-table tbody { background: #fff; }
+      .question-jump, .jump-title, .page-title, .mole-question { overflow-wrap: anywhere; min-width: 0; }
+      #questionTitle { font-size: 30px; line-height: 1.5; }
+      .choice-button, .drag-choice, .tap-target { white-space: normal; overflow-wrap: anywhere; min-width: 0; min-height: 48px; font-size: 24px; }
+      .big-equation { flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .number-tile { flex: 0 0 auto; }
+      .compare-board { grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); }
+      .compare-side { overflow-wrap: anywhere; font-size: 28px; }
+      button:focus-visible { outline: 3px solid #357baa; outline-offset: 3px; }
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: minmax(0, 1fr); }
+      }
+      @media (max-width: 600px) {
+        h1 { font-size: 32px; }
+        .sticker-row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        #questionTitle { font-size: 24px; }
+        .choice-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .choice-button, .drag-choice, .tap-target { font-size: 20px; padding: 12px 8px; }
+        .compare-side { font-size: 21px; padding: 8px; }
+        .number-tile { min-width: 36px; padding: 6px; font-size: 24px; }
+        .group-scene { gap: 8px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      }
     </style>
   </head>
   <body>
@@ -1768,6 +1810,7 @@
       <section class="hero">
         <div>
           <h1>安静书数学乐园</h1>
+          <p class="grade-label">二年级 · 乘法综合练习</p>
           <p class="subtitle">翻一翻、拖一拖、涂一涂，和数字一起闯关。每完成一页，就收集一枚数学贴纸。</p>
         </div>
         <aside class="reward-book">
@@ -1829,9 +1872,9 @@
 
         <section class="page" id="page-sticks">
           <span class="label" id="questionLabel">当前题目</span>
-          <h2 class="page-title" id="questionTitle">37 + 23 = ?</h2>
-          <span class="progress-pill" id="questionProgress">第 1 / 10 题</span>
-          <p class="intro" id="questionPrompt">先算个位，再算十位。写出最后答案。</p>
+          <h2 class="page-title" id="questionTitle">7 × 8 = □</h2>
+          <span class="progress-pill" id="questionProgress">第 1 / 18 题</span>
+          <p class="intro" id="questionPrompt">想口诀，求出积。</p>
           <div class="question-preview" id="questionVisual">
             <div class="dot-demo" aria-label="3 个点子">
               <span></span><span></span><span></span>
@@ -1848,131 +1891,15 @@
             <div class="answer-pocket" id="answerPocket">答案袋</div>
           </div>
           <div class="tap-panel" id="tapPanel"></div>
-          <div class="result" id="questionResult">这一页是框架预览。真实题目会按照图片改成对应玩法。</div>
+          <div class="result" id="questionResult">读清题目，再试一试。</div>
         </section>
 
-        <section class="page" id="page-hidden">
-          <span class="label">遮挡盒子</span>
-          <h2 class="page-title">一共有 12 个，外面有 5 个，盒子里有几个？</h2>
-          <p class="intro">用“整体 - 外面 = 盒子里”理解部分和整体。点黄色盖子翻开答案。</p>
-          <div class="box-scene">
-            <div class="outside-dots">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="dot"></span><span class="dot"></span>
-            </div>
-            <div class="toy-box"></div>
-            <button class="lid" id="lidButton" type="button">点我翻开</button>
-            <div class="hidden-count" id="hiddenCount">盒子里 7 个</div>
-          </div>
-          <div class="result">想法：12 - 5 = 7，所以盒子里有 7 个。</div>
-        </section>
-
-        <section class="page" id="page-grouping">
-          <span class="label">装盒分组</span>
-          <h2 class="page-title">43 个小月饼，每 10 个装一盒</h2>
-          <p class="intro">先把 10 个分成一盒，再看看还剩几个。边分边数，答案就会自己跑出来。</p>
-          <div class="quiet-board">
-            <div class="panel">
-              <h3>月饼堆</h3>
-              <div class="group-row" id="moonPile"></div>
-            </div>
-            <div class="panel">
-              <h3>盒子</h3>
-              <div class="box">第 1 盒：10 个</div>
-              <div class="box" style="margin-top:10px;">第 2 盒：10 个</div>
-              <div class="box" style="margin-top:10px;">第 3 盒：10 个</div>
-              <div class="box" style="margin-top:10px;">第 4 盒：10 个</div>
-            </div>
-          </div>
-          <div class="result">43 个可以装满 4 盒，还剩 3 个。</div>
-        </section>
-
-        <section class="page" id="page-hundred">
-          <span class="label">百数表小路</span>
-          <h2 class="page-title">找到 24 的上下左右</h2>
-          <p class="intro">点击 24、14、34、23、25，帮助孩子理解上面少 10，下面多 10，左边少 1，右边多 1。</p>
-          <div class="panel">
-            <div class="hundred-grid" id="hundredGrid"></div>
-          </div>
-          <div class="result" id="hundredResult">已涂 0 个目标格。</div>
-        </section>
-
-        <section class="page" id="page-drag">
-          <span class="label">拖一拖</span>
-          <h2 class="page-title">把答案拖到正确的口袋</h2>
-          <p class="intro">看清每张答案卡，把大于 10 的答案拖进右边口袋。</p>
-          <div class="drag-area">
-            <div class="drag-pile">
-              <h3>答案卡</h3>
-              <div class="drag-items" id="dragItems">
-                <div class="drag-item" draggable="true" data-value="8">8</div>
-                <div class="drag-item" draggable="true" data-value="11">11</div>
-                <div class="drag-item" draggable="true" data-value="14">14</div>
-                <div class="drag-item" draggable="true" data-value="9">9</div>
-                <div class="drag-item" draggable="true" data-value="16">16</div>
-              </div>
-            </div>
-            <div class="drop-zone" id="dropZone">
-              <h3>大于 10 的口袋</h3>
-              <div class="drag-items" id="dropItems"></div>
-            </div>
-          </div>
-          <div class="result" id="dragResult">拖入 11、14、16，就能得到分类贴纸。</div>
-        </section>
-
-        <section class="page" id="page-paint">
-          <span class="label">涂色页</span>
-          <h2 class="page-title">按要求给格子涂色</h2>
-          <p class="intro">适合百数表、规律题、图形统计、点子图。先点颜色，再点格子，像在书页上涂一涂。</p>
-          <div class="color-toolbar">
-            <button class="color-tool active" data-color="color-a" type="button">黄色：答案</button>
-            <button class="color-tool" data-color="color-b" type="button">绿色：线索</button>
-            <button class="color-tool" data-color="color-c" type="button">粉色：检查</button>
-            <button class="color-tool" data-color="" type="button">橡皮</button>
-          </div>
-          <div class="panel">
-            <div class="paint-grid" id="paintGrid"></div>
-          </div>
-          <div class="result" id="paintResult">任务：涂出 5 个黄色格子，表示 5 个答案点。</div>
-        </section>
-
-        <section class="page" id="page-paper">
-          <span class="label">小小挑战</span>
-          <h2 class="page-title">完成 4 道看图数学题</h2>
-          <p class="intro">先看图，再找数字；先说关系，再列算式。做完 4 题，就能收集一枚“看图小侦探”贴纸。</p>
-          <div class="paper-bank">
-            <article class="paper-question">
-              <img src="看图题素材/q01_36加8.png" alt="36加8小棒题" />
-              <h3>1. 小棒进位加法</h3>
-              <p>题目：看小棒算一算，36 + 8 = ? 答案是 44。</p>
-              <span class="play-tag">拖一拖：8 根小棒进个位</span>
-            </article>
-            <article class="paper-question">
-              <img src="看图题素材/q02_32减6.png" alt="32减6小棒题" />
-              <h3>2. 小棒退位减法</h3>
-              <p>题目：看小棒算一算，32 - 6 = ? 答案是 26。</p>
-              <span class="play-tag">拆一拆：1 组十变成 10 根</span>
-            </article>
-            <article class="paper-question">
-              <img src="看图题素材/q04_12遮挡.png" alt="12个玩具遮挡题" />
-              <h3>3. 遮挡盒子题</h3>
-              <p>题目：一共有 12 个，外面有 5 个，盒子里有几个？答案是 7 个。</p>
-              <span class="play-tag">翻一翻：找盒子里的数量</span>
-            </article>
-            <article class="paper-question">
-              <img src="看图题素材/q08_百数表.png" alt="百数表24上下左右" />
-              <h3>4. 百数表涂色</h3>
-              <p>题目：看 24 的上、下、左、右。上 14，下 34，左 23，右 25。</p>
-              <span class="play-tag">涂一涂：点出 5 个线索数</span>
-            </article>
-          </div>
-        </section>
       </section>
 
       <div class="reward-modal" id="rewardModal" aria-hidden="true">
         <div class="reward-card" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
           <div class="medal" id="medal">奖</div>
-          <h2 id="rewardTitle">获得小棒奖章！</h2>
+          <h2 id="rewardTitle">获得思考奖章！</h2>
           <p id="rewardText">你完成了这一页。</p>
           <button class="next-question" id="nextQuestionButton" type="button">下一题</button>
         </div>
@@ -1984,7 +1911,7 @@
           <h2 id="grandRewardTitle">全部完成！</h2>
           <p>你把这一组题都做对了，获得“数学小闯关王”大奖章。</p>
           <div class="grand-stars" aria-hidden="true">
-            <span>算</span><span>比</span><span>棒</span><span>果</span>
+            <span>乘</span><span>比</span><span>思</span><span>用</span>
           </div>
           <button class="next-question" id="grandRewardButton" type="button">回到题目目录</button>
         </div>
@@ -1993,7 +1920,7 @@
       <div class="footer-note">做题小口令：先看图，再找数字；先说关系，再列算式；最后检查单位。</div>
     </main>
 
-  <script src="quiet-book-generator.js?v=20260715-harder-exam-style"></script>
+  <script src="quiet-book-generator.js?v=20260905-multiplication-18"></script>
     <script>
       const tabs = Array.from(document.querySelectorAll(".tab"));
       const pages = Array.from(document.querySelectorAll(".page"));
@@ -2025,8 +1952,8 @@
       ];
       const moleHints = [
         "没关系，下一题先在心里算一遍再点。",
-        "差一点点，注意个位和十位。",
-        "别急，先看清加号和减号。",
+        "再想想对应的乘法口诀。",
+        "别急，先乘再加减。",
         "继续试试，你已经知道要检查答案了。"
       ];
       let moleSettings = { players: 1, count: 5 };
@@ -2054,54 +1981,16 @@
         });
       }
 
-      function makeMoleQuestion() {
-        const type = randomInt(1, 5);
-        let text = "";
-        let answer = 0;
-        if (type === 1) {
-          const a = randomInt(4, 78);
-          const b = randomInt(2, 100 - a);
-          answer = a + b;
-          text = `${a} + ${b} = ?`;
-        } else if (type === 2) {
-          const a = randomInt(10, 100);
-          const b = randomInt(1, a);
-          answer = a - b;
-          text = `${a} - ${b} = ?`;
-        } else if (type === 3) {
-          const a = randomInt(2, 45);
-          const b = randomInt(2, 35);
-          const c = randomInt(1, Math.max(1, 100 - a - b));
-          answer = a + b + c;
-          text = `${a} + ${b} + ${c} = ?`;
-        } else if (type === 4) {
-          const a = randomInt(25, 100);
-          const b = randomInt(1, Math.min(35, a - 1));
-          const c = randomInt(1, Math.min(25, a - b));
-          answer = a - b - c;
-          text = `${a} - ${b} - ${c} = ?`;
-        } else {
-          const a = randomInt(12, 76);
-          const b = randomInt(2, 100 - a);
-          const sum = a + b;
-          const c = randomInt(1, Math.min(35, sum));
-          answer = sum - c;
-          text = `${a} + ${b} - ${c} = ?`;
-        }
-        return { text, answer };
-      }
-
       function makeMoleQuestionSet(count) {
-        const seen = new Set();
-        const questionSet = [];
-        while (questionSet.length < count) {
-          const question = makeMoleQuestion();
-          if (question.answer < 0 || question.answer > 100) continue;
-          if (seen.has(question.text)) continue;
-          seen.add(question.text);
-          questionSet.push(question);
-        }
-        return questionSet;
+        if (window.QuietBookQuestionGenerator) return window.QuietBookQuestionGenerator.generateMoleQuestionSet(count);
+        const all = [];
+        for (let a = 1; a <= 9; a++) for (let b = 1; b <= 9; b++) all.push({a, b});
+        const mixedCount = Math.floor(count / 3);
+        return shuffle(shuffle(all).slice(0, count).map(({a, b}, i) => {
+          const op = i < mixedCount ? (i % 2 ? "−" : "+") : "";
+          const c = op ? randomInt(1, Math.min(19, op === "+" ? 100 - a * b : a * b)) : 0;
+          return {text: a + " × " + b + (op ? " " + op + " " + c : "") + " = ?", answer: a * b + (op === "+" ? c : -c)};
+        }));
       }
 
       function makeMoleOptions(answer) {
@@ -2224,6 +2113,10 @@
         const winner = ranked[0];
         const runner = ranked[1];
         const sameScore = winner.score === runner.score;
+        if (sameScore && winner.elapsed === runner.elapsed) {
+          moleStatus.textContent = "两组并列冠军！得分和用时完全相同。";
+          return;
+        }
         moleStatus.textContent = sameScore
           ? `${winner.name} 获胜！两组都是 ${winner.score} 分，${winner.name} 用时更短：${formatMoleTime(winner.elapsed)}。`
           : `${winner.name} 获胜！${winner.name} ${winner.score} 分，${runner.name} ${runner.score} 分。`;
@@ -2231,9 +2124,11 @@
 
       function handleMoleAnswer(playerId, selectedValue, target) {
         if (!moleGame) return;
+        const round = moleGame;
         const player = moleGame.players.find((item) => item.id === playerId);
         if (!player || player.locked || player.finished) return;
         player.locked = true;
+        player.lastAnswerTime = Date.now();
         const question = player.order[player.current];
         const correct = selectedValue === question.answer;
         const feedbackClass = correct ? "correct" : "wrong";
@@ -2247,11 +2142,12 @@
         feedback.classList.add(feedbackClass);
         target.classList.add(feedbackClass);
         setTimeout(() => {
+          if (moleGame !== round) return;
           player.current += 1;
           player.locked = false;
           if (player.current >= player.order.length) {
             player.finished = true;
-            player.elapsed = Date.now() - player.startTime;
+            player.elapsed = player.lastAnswerTime - player.startTime;
             player.feedback = `${player.name} 完成啦，得分 ${player.score} / ${moleGame.count}。`;
           } else {
             player.feedback = "下一只地鼠来了，先算再点。";
@@ -2271,9 +2167,7 @@
           if (i === 1) {
             firstOrderKey = order.map((question) => question.text).join("|");
           } else if (baseQuestions.length > 1) {
-            while (order.map((question) => question.text).join("|") === firstOrderKey) {
-              order = shuffle(baseQuestions);
-            }
+            order = [...order.slice(1), order[0]];
           }
           players.push(createMolePlayer(i, order));
         }
@@ -2313,241 +2207,21 @@
       setSegmentedValue(molePlayerOptions, "players", moleSettings.players);
       setSegmentedValue(moleCountOptions, "count", moleSettings.count);
 
-      function makeTenGroup() {
-        const group = document.createElement("div");
-        group.className = "ten-group";
-        for (let i = 0; i < 10; i += 1) {
-          const stick = document.createElement("span");
-          stick.className = "mini-stick";
-          group.appendChild(stick);
-        }
-        return group;
+      const fallbackQuestions = [{"category":"extension","label":"判断纠错","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"7 × 8 = 56，对吗？","steps":[{"mode":"choice","options":["对","不对"],"answer":"对","prompt":"第一步：判断这道算式。","hint":"想一想：七八这句口诀。","explanation":"口诀“七八五十六”。7 × 8 = 56。"},{"answer":56,"mode":"input","options":[45,56,66,68],"prompt":"第二步：写出正确的积。","hint":"想一想：七八这句口诀。","explanation":"口诀“七八五十六”。7 × 8 = 56。"}],"answer":56,"options":["对","不对"],"prompt":"第一步：判断这道算式。","hint":"想一想：七八这句口诀。","explanation":"口诀“七八五十六”。7 × 8 = 56。","visual":{"type":"instruction","text":"想口诀，核对积。"},"math":{"a":7,"b":8,"op":"","c":0},"shown":56,"id":"q-1788620659681-0"},{"category":"compare","label":"比大小","mode":"compare","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"4 × 2 ○ 8","prompt":"分别算出两边的结果，再选符号。","answer":"=","options":["<",">","="],"hint":"先算乘法，再算加减。相同大小要选等号。","explanation":"左边是8，右边是8，所以选 =。","visual":{"type":"compare","left":"4 × 2","right":8},"left":{"a":4,"b":2,"op":"","c":0},"right":null,"rightValue":8,"id":"q-1788620659681-1"},{"category":"blank","label":"乘数填空","mode":"input","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"□ × 7 = 63","prompt":"□里填1—9中的整数。","answer":9,"options":[3,2,6,9],"hint":"想一想哪句口诀的积是63。","explanation":"9 × 7 = 63，所以填 9。","visual":{"type":"instruction","text":"让等号两边一样大。"},"math":{"a":9,"b":7,"op":"","c":0},"blankKind":"factor","id":"q-1788620659681-2"},{"category":"picture","label":"看图乘加减","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"看图选算式：现在一共有多少个？","prompt":"每组6个，共5组。划去5个。","answer":"6 × 5 − 5","options":["4 × 7 − 5","6 × 5 − 5","4 × 4 − 5","4 × 8 − 5"],"hint":"先算乘法，再算加减。想想对应的乘法口诀。","explanation":"口诀“五六三十”。6 × 5 − 5 = 25。","visual":{"type":"groups","groups":5,"each":6,"op":"−","change":5,"icon":"●","unit":"个"},"math":{"a":6,"b":5,"op":"−","c":5},"id":"q-1788620659681-3"},{"category":"extremum","label":"最小能填几","mode":"input","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"□ × 6 − 6 > 41","prompt":"□里填1—9中的整数，最小能填几？","answer":8,"options":[8,5,7,18],"hint":"把1—9代进去试一试。注意要严格大于，不能相等。","explanation":"符合条件的数是 8、9，所以最小填 8。","visual":{"type":"instruction","text":"可选整数：1、2、3、4、5、6、7、8、9"},"constraint":{"b":6,"op":"−","c":6,"limit":41,"relation":">","seek":"min"},"id":"q-1788620659681-4"},{"category":"mixed","label":"乘减计算","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"7 × 8 − 7 = □","prompt":"先算乘法，再算加减。","answer":49,"options":[56,54,41,49],"hint":"先算乘法，再算加减。想想对应的乘法口诀。","explanation":"口诀“七八五十六”。7 × 8 − 7 = 49。","visual":{"type":"equation","parts":[7,"×",8,"−",7,"="]},"math":{"a":7,"b":8,"op":"−","c":7},"id":"q-1788620659681-5"},{"category":"blank","label":"加减数填空","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"6 × 7 + □ = 49","prompt":"□里填0—19中的整数。","answer":7,"options":[16,10,7,0],"hint":"先算出乘法的积，再想它怎样变成右边的数。","explanation":"6 × 7 + 7 = 49，所以填 7。","visual":{"type":"instruction","text":"让等号两边一样大。"},"math":{"a":6,"b":7,"op":"+","c":7},"blankKind":"offset","id":"q-1788620659681-6"},{"category":"picture","label":"看图列式","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"看图选算式：现在一共有多少个？","prompt":"每组2个，共5组。","answer":"2 × 5","options":["8 × 7","6 × 1","2 × 5","2 × 7"],"hint":"想一想：二五这句口诀。","explanation":"口诀“二五十”。2 × 5 = 10。","visual":{"type":"groups","groups":5,"each":2,"op":"","change":0,"icon":"●","unit":"个"},"math":{"a":2,"b":5,"op":"","c":0},"id":"q-1788620659681-7"},{"category":"extremum","label":"最大能填几","mode":"input","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"□ × 2 < 11","prompt":"□里填1—9中的整数，最大能填几？","answer":5,"options":[15,5,13,6],"hint":"把1—9代进去试一试。注意要严格小于，不能相等。","explanation":"符合条件的数是 1、2、3、4、5，所以最大填 5。","visual":{"type":"instruction","text":"可选整数：1、2、3、4、5、6、7、8、9"},"constraint":{"b":2,"op":"","c":0,"limit":11,"relation":"<","seek":"max"},"id":"q-1788620659681-8"},{"category":"mixed","label":"乘加计算","mode":"tap","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"2 × 5 + 18 = □","prompt":"先算乘法，再算加减。","answer":28,"options":[40,29,28,25],"hint":"先算乘法，再算加减。想想对应的乘法口诀。","explanation":"口诀“二五十”。2 × 5 + 18 = 28。","visual":{"type":"equation","parts":[2,"×",5,"+",18,"="]},"math":{"a":2,"b":5,"op":"+","c":18},"id":"q-1788620659681-9"},{"category":"extremum","label":"最小能填几","mode":"input","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"□ × 2 > 9","prompt":"□里填1—9中的整数，最小能填几？","answer":5,"options":[12,14,8,5],"hint":"把1—9代进去试一试。注意要严格大于，不能相等。","explanation":"符合条件的数是 5、6、7、8、9，所以最小填 5。","visual":{"type":"instruction","text":"可选整数：1、2、3、4、5、6、7、8、9"},"constraint":{"b":2,"op":"","c":0,"limit":9,"relation":">","seek":"min"},"id":"q-1788620659681-10"},{"category":"word","label":"求总价","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"铅笔每支9元，买2支，一共需要多少钱？","prompt":"第一步：选出符合题意的算式。","answer":18,"options":["2 × 8","9 × 2","8 × 5","4 × 3"],"steps":[{"mode":"choice","answer":"9 × 2","options":["2 × 8","9 × 2","8 × 5","4 × 3"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 9 × 2。"},{"answer":18,"mode":"input","options":[18,20,11,13],"prompt":"第二步：计算结果，填写多少元。","hint":"想一想：二九这句口诀。","explanation":"口诀“二九十八”。9 × 2 = 18。"}],"visual":{"type":"instruction","text":"每支9元，共买2支。"},"math":{"a":9,"b":2,"op":"","c":0},"wordKind":"price","unit":"元","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"口诀“二九十八”。9 × 2 = 18。","id":"q-1788620659681-11"},{"category":"word","label":"求总数","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"每盘有4个苹果，1盘一共有多少个苹果？","prompt":"第一步：选出符合题意的算式。","answer":4,"options":["1 × 2","1 × 6","4 × 1","4 × 3"],"steps":[{"mode":"choice","answer":"4 × 1","options":["1 × 2","1 × 6","4 × 1","4 × 3"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 4 × 1。"},{"answer":4,"mode":"input","options":[5,4,15,0],"prompt":"第二步：计算结果，填写多少个。","hint":"想一想：一四这句口诀。","explanation":"口诀“一四得四”。4 × 1 = 4。"}],"visual":{"type":"groups","groups":1,"each":4,"op":"","change":0,"icon":"🍎","unit":"个"},"math":{"a":4,"b":1,"op":"","c":0},"wordKind":"total","unit":"个","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"口诀“一四得四”。4 × 1 = 4。","id":"q-1788620659681-12"},{"category":"word","label":"够不够","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"每张桌子坐9人，9张桌子，能坐下85人吗？","prompt":"第一步：选出符合题意的算式。","answer":"不够","options":["3 × 6","7 × 9","9 × 9","4 × 1"],"steps":[{"mode":"choice","answer":"9 × 9","options":["3 × 6","7 × 9","9 × 9","4 × 1"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 9 × 9。"},{"mode":"choice","answer":"不够","options":["够","不够"],"prompt":"第二步：算出能坐多少人，再判断够不够。","hint":"座位数和人数一样，也算够。","explanation":"9 × 9 = 81，需要85个座位，所以不够。"}],"visual":{"type":"instruction","text":"需要安排85人入座。"},"math":{"a":9,"b":9,"op":"","c":0},"wordKind":"enough","needed":85,"unit":"人","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"9 × 9 = 81，需要85个座位，所以不够。","id":"q-1788620659681-13"},{"category":"oral","label":"乘法口算","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"8 × 8 = □","prompt":"想口诀，求出积。","answer":64,"options":[73,72,68,64],"hint":"想一想：八八这句口诀。","explanation":"口诀“八八六十四”。8 × 8 = 64。","visual":{"type":"equation","parts":[8,"×",8,"="]},"math":{"a":8,"b":8,"op":"","c":0},"id":"q-1788620659681-14"},{"category":"word","label":"增加应用","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"5盒彩笔，每盒5支，另外还有17支，一共有多少支？","prompt":"第一步：选出符合题意的算式。","answer":42,"options":["5 × 4 + 17","8 × 9 + 17","5 × 5 + 17","3 × 8 + 17"],"steps":[{"mode":"choice","answer":"5 × 5 + 17","options":["5 × 4 + 17","8 × 9 + 17","5 × 5 + 17","3 × 8 + 17"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 5 × 5 + 17。"},{"answer":42,"mode":"input","options":[42,45,48,49],"prompt":"第二步：计算结果，填写多少支。","hint":"先算乘法，再算加减。想想对应的乘法口诀。","explanation":"口诀“五五二十五”。5 × 5 + 17 = 42。"}],"visual":{"type":"groups","groups":5,"each":5,"op":"+","change":17,"icon":"●","unit":"支"},"math":{"a":5,"b":5,"op":"+","c":17},"wordKind":"add","unit":"支","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"口诀“五五二十五”。5 × 5 + 17 = 42。","id":"q-1788620659681-15"},{"category":"word","label":"减少应用","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"6盒彩笔，每盒6支，送出7支，还剩多少支？","prompt":"第一步：选出符合题意的算式。","answer":29,"options":["5 × 3 − 7","6 × 6 − 7","6 × 7 − 7","1 × 8 − 7"],"steps":[{"mode":"choice","answer":"6 × 6 − 7","options":["5 × 3 − 7","6 × 6 − 7","6 × 7 − 7","1 × 8 − 7"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 6 × 6 − 7。"},{"answer":29,"mode":"input","options":[38,29,21,35],"prompt":"第二步：计算结果，填写多少支。","hint":"先算乘法，再算加减。想想对应的乘法口诀。","explanation":"口诀“六六三十六”。6 × 6 − 7 = 29。"}],"visual":{"type":"groups","groups":6,"each":6,"op":"−","change":7,"icon":"●","unit":"支"},"math":{"a":6,"b":6,"op":"−","c":7},"wordKind":"subtract","unit":"支","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"口诀“六六三十六”。6 × 6 − 7 = 29。","id":"q-1788620659681-16"},{"category":"word","label":"读表选条件","mode":"choice","medalText":"思","actionText":"想一想","rewardTitle":"收获一枚思考奖章！","rewardText":"你读懂了题目，也认真检查了答案。","success":"答对啦！你的思路很清楚。","title":"看价格表，买7块橡皮需要多少钱？","prompt":"第一步：选出符合题意的算式。","answer":14,"options":["7 × 5","2 × 7","5 × 6","9 × 8"],"steps":[{"mode":"choice","answer":"2 × 7","options":["7 × 5","2 × 7","5 × 6","9 × 8"],"prompt":"第一步：选出符合题意的算式。","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"对应的算式是 2 × 7。"},{"answer":14,"mode":"input","options":[26,6,13,14],"prompt":"第二步：计算结果，填写多少元。","hint":"想一想：二七这句口诀。","explanation":"口诀“二七十四”。2 × 7 = 14。"}],"visual":{"type":"price-table","rows":[{"name":"铅笔","unit":"支","price":7},{"name":"橡皮","unit":"块","price":2},{"name":"尺子","unit":"把","price":5},{"name":"练习本","unit":"本","price":1}],"target":1,"count":7},"math":{"a":2,"b":7,"op":"","c":0},"wordKind":"table","unit":"元","hint":"找到每份的数量和份数，再看有没有增加或减少。","explanation":"口诀“二七十四”。2 × 7 = 14。","id":"q-1788620659681-17"}];
+      function getQuestionSet() {
+        return window.QuietBookQuestionGenerator
+          ? window.QuietBookQuestionGenerator.generateQuestionSet()
+          : shuffle(JSON.parse(JSON.stringify(fallbackQuestions)));
       }
-
-      function makeStick() {
-        const stick = document.createElement("span");
-        stick.className = "stick";
-        return stick;
-      }
-
-      let questions = window.QuietBookQuestionGenerator ? window.QuietBookQuestionGenerator.generateQuestionSet() : [
-        {
-          label: "口算",
-          title: "37 + 23 = ?",
-          prompt: "先算个位，再算十位。写出最后答案。",
-          answer: 60,
-          mode: "choice",
-          options: [50, 57, 60, 70],
-          hint: "先算 30 + 20 = 50，再算 7 + 3 = 10，合起来是 60。",
-          success: "答对啦！个位满十，十位也要多 1。",
-          rewardTitle: "获得口算奖章！",
-          rewardText: "你完成了 37 + 23。",
-          medalText: "算",
-          actionText: "看分解",
-          visual: { type: "place-add", tensA: 3, onesA: 7, tensB: 2, onesB: 3 }
-        },
-        {
-          label: "口算",
-          title: "44 - 18 = ?",
-          prompt: "个位不够减，先借 1 个十再算。",
-          answer: 26,
-          mode: "input",
-          hint: "14 - 8 = 6，剩下 2 个十，所以答案是 26。",
-          success: "答对啦！退位减法算得很稳。",
-          rewardTitle: "获得退位奖章！",
-          rewardText: "你完成了 44 - 18。",
-          medalText: "退",
-          actionText: "看提示",
-          visual: { type: "number-line", start: 44, steps: ["-10", "-8"], end: "?" }
-        },
-        {
-          label: "连加连减",
-          title: "44 - 14 + 5 = ?",
-          prompt: "从左往右一步一步算，不要跳步。",
-          answer: 35,
-          mode: "choice",
-          options: [25, 30, 35, 40],
-          hint: "先算 44 - 14 = 30，再算 30 + 5 = 35。",
-          success: "答对啦！连算题要按顺序。",
-          rewardTitle: "获得顺序奖章！",
-          rewardText: "你按顺序完成了连算题。",
-          medalText: "序",
-          actionText: "看步骤",
-          visual: { type: "step-cards", cards: ["44 - 14", "30 + 5", "?"] }
-        },
-        {
-          label: "填方框",
-          title: "33 + 8 = □",
-          prompt: "方框里应该填几？把答案写进去。",
-          answer: 41,
-          mode: "drag",
-          options: [40, 41, 42, 43],
-          hint: "33 + 7 = 40，再加 1，就是 41。",
-          success: "答对啦！你会用凑十法了。",
-          rewardTitle: "获得方框奖章！",
-          rewardText: "你把方框里的数找出来了。",
-          medalText: "□",
-          actionText: "看凑十",
-          visual: { type: "ten-frame", base: 3, add: 8 }
-        },
-        {
-          label: "比大小",
-          title: "50 + 6  ?  65",
-          prompt: "先算左边，再和右边比一比。",
-          answer: "<",
-          mode: "compare",
-          options: [">", "<", "="],
-          hint: "50 + 6 = 56，56 比 65 小，所以填 <。",
-          success: "答对啦！先算再比较。",
-          rewardTitle: "获得比较奖章！",
-          rewardText: "你完成了 50 + 6 和 65 的比较。",
-          medalText: "比",
-          actionText: "先算左边",
-          visual: { type: "compare", left: "50 + 6", right: "65" }
-        },
-        {
-          label: "比大小",
-          title: "90  ?  99 - 9",
-          prompt: "先算右边，再判断是大于、小于还是等于。",
-          answer: "=",
-          mode: "compare",
-          options: [">", "<", "="],
-          hint: "99 - 9 = 90，左边也是 90，所以填 =。",
-          success: "答对啦！两个数一样大。",
-          rewardTitle: "获得等号奖章！",
-          rewardText: "你找到了相等的两个数。",
-          medalText: "=",
-          actionText: "先算右边",
-          visual: { type: "compare", left: "90", right: "99 - 9" }
-        },
-        {
-          label: "小棒进位",
-          title: "27 + 4 = ?",
-          prompt: "看小棒：先算 7 + 4，再和 2 个十合起来。",
-          answer: 31,
-          mode: "tap",
-          options: [29, 30, 31, 32, 34],
-          hint: "先算 7 + 4 = 11，再算 20 + 11 = 31。",
-          success: "答对啦！小棒满十可以变成一组十。",
-          rewardTitle: "获得小棒奖章！",
-          rewardText: "你看懂了 27 + 4 的进位。",
-          medalText: "棒",
-          actionText: "看小棒",
-          visual: { type: "sticks", tens: 2, ones: 7, addOnes: 4 }
-        },
-        {
-          label: "小棒进位",
-          title: "36 + 8 = ?",
-          prompt: "看小棒：先算 6 + 8，再和 3 个十合起来。",
-          answer: 44,
-          mode: "input",
-          hint: "先算 6 + 8 = 14，再算 30 + 14 = 44。",
-          success: "答对啦！你会先算个位再合起来。",
-          rewardTitle: "获得小棒奖章！",
-          rewardText: "你完成了 36 + 8。",
-          medalText: "棒",
-          actionText: "看小棒",
-          visual: { type: "sticks", tens: 3, ones: 6, addOnes: 8 }
-        },
-        {
-          label: "数位组成",
-          title: "1 个十和 6 个一，合起来是多少？",
-          prompt: "一个十是 10，再加 6 个一。",
-          answer: 16,
-          mode: "choice",
-          options: [10, 16, 61, 6],
-          hint: "1 个十是 10，6 个一是 6，10 + 6 = 16。",
-          success: "答对啦！你看懂了几个十和几个一。",
-          rewardTitle: "获得数位奖章！",
-          rewardText: "你完成了十和一的组成。",
-          medalText: "位",
-          actionText: "数一数",
-          visual: { type: "money", tens: 1, ones: 6 }
-        },
-        {
-          label: "数位组成",
-          title: "四十九添 1 是多少？",
-          prompt: "49 再添 1，就满成 5 个十。",
-          answer: 50,
-          mode: "drag",
-          options: [40, 49, 50, 59],
-          hint: "49 后面一个数是 50，也就是 5 个十。",
-          success: "答对啦！49 添 1 就满十了。",
-          rewardTitle: "获得满十奖章！",
-          rewardText: "你找到 49 的后一个整十数。",
-          medalText: "十",
-          actionText: "看数位",
-          visual: { type: "number-line", start: 49, steps: ["+1"], end: "?" }
-        },
-        {
-          label: "看图应用",
-          title: "原来有 68 箱，运走 12 箱，还剩多少箱？",
-          prompt: "求还剩，用减法。把剩下的箱数写出来。",
-          answer: 56,
-          mode: "choice",
-          options: [46, 56, 76, 80],
-          hint: "求还剩：68 - 12。先算 68 - 10 = 58，再减 2 = 56。",
-          success: "答对啦！看到“还剩”就想到减法。",
-          rewardTitle: "获得货车奖章！",
-          rewardText: "你完成了运箱子问题。",
-          medalText: "车",
-          actionText: "看箱子",
-          visual: { type: "photo", src: "assets/real-truck-crates.png", caption: "看货车和箱子，想一想：运走后还剩多少？" }
-        },
-        {
-          label: "看图应用",
-          title: "有 24 箱苹果，每次运 8 箱，需要几次？",
-          prompt: "可以想：几个 8 合起来是 24。",
-          answer: 3,
-          mode: "drag",
-          options: [2, 3, 4, 8],
-          hint: "8 + 8 + 8 = 24，所以需要 3 次。",
-          success: "答对啦！你会用分组想问题。",
-          rewardTitle: "获得苹果奖章！",
-          rewardText: "你完成了搬苹果问题。",
-          medalText: "果",
-          actionText: "分一分",
-          visual: { type: "photo", src: "assets/real-apple-crates.png", caption: "看 24 箱苹果，想一想每次运 8 箱，需要几次？" }
-        },
-        {
-          label: "比大小",
-          title: "20 + 9  ?  30 + 6",
-          prompt: "两边都要先算，再比较大小。",
-          answer: "<",
-          mode: "compare",
-          options: [">", "<", "="],
-          hint: "20 + 9 = 29，30 + 6 = 36，29 比 36 小。",
-          success: "答对啦！两边都算清楚了。",
-          rewardTitle: "获得双边比较奖章！",
-          rewardText: "你完成了两边算式的比较。",
-          medalText: "比",
-          actionText: "两边都算",
-          visual: { type: "compare", left: "20 + 9", right: "30 + 6" }
-        },
-        {
-          label: "比大小",
-          title: "18 - 9  ?  19 - 8",
-          prompt: "先算两边，再填符号。",
-          answer: "<",
-          mode: "compare",
-          options: [">", "<", "="],
-          hint: "18 - 9 = 9，19 - 8 = 11，9 比 11 小。",
-          success: "答对啦！减法比较也能一步一步来。",
-          rewardTitle: "获得减法比较奖章！",
-          rewardText: "你完成了两道减法的比较。",
-          medalText: "减",
-          actionText: "两边都算",
-          visual: { type: "compare", left: "18 - 9", right: "19 - 8" }
-        }
-      ];
+      let questions = getQuestionSet();
       const optionModes = new Set(["choice", "drag", "tap", "compare"]);
 
       function makeSafeOptions(answer, existingOptions = []) {
         if (answer === ">" || answer === "<" || answer === "=") {
           return [">", "<", "="];
         }
-        if (answer === "对" || answer === "错") {
-          return ["对", "错"];
+        if (answer === "对" || answer === "不对") {
+          return ["对", "不对"];
         }
         const numericAnswer = Number(answer);
         if (!Number.isFinite(numericAnswer)) {
@@ -2573,6 +2247,7 @@
       }
 
       function repairQuestionOptions(question) {
+        if (question.steps) return { ...question, steps: question.steps.map(repairQuestionOptions) };
         if (!optionModes.has(question.mode)) return question;
         const options = Array.isArray(question.options) ? question.options : [];
         const uniqueOptions = Array.from(new Set(options));
@@ -2591,6 +2266,10 @@
 
       questions = normalizeQuestionSet(questions);
       let currentQuestionIndex = 0;
+      let currentStepIndex = 0;
+      let hintLevel = 0;
+      let draggedAnswerValue = null;
+      let draggedAnswerButton = null;
 
       const questionLabel = document.querySelector("#questionLabel");
       const questionTitle = document.querySelector("#questionTitle");
@@ -2662,191 +2341,64 @@
         return `<span class="number-tile ${extraClass}">${text}</span>`;
       }
 
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      }
+
       function renderVisual(visual) {
         if (visual.type === "equation") {
-          return `
-            <div class="visual-stage">
-              <div class="big-equation">
-                ${visual.parts.map((part) => makeNumberTile(part)).join("")}
-                ${makeNumberTile("?", "blank-tile")}
-              </div>
-              <div class="visual-caption">把问号里的答案写到下面。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "photo") {
-          return `
-            <div class="visual-stage">
-              <div class="story-card">
-                <div class="story-icon" aria-hidden="true">题</div>
-                <div class="story-text">${visual.caption || "读题，找数字，再列式。"}</div>
-              </div>
-            </div>
-          `;
+          return '<div class="big-equation">' + visual.parts.map(part => makeNumberTile(escapeHtml(part))).join("") + makeNumberTile("?", "blank-tile") + '</div>';
         }
         if (visual.type === "compare") {
-          return `
-            <div class="visual-stage">
-              <div class="compare-board">
-                <div class="compare-side">${visual.left}</div>
-                <div class="compare-symbol">选符号</div>
-                <div class="compare-side">${visual.right}</div>
-              </div>
-              <div class="visual-caption">先算，再选择 >、< 或 =。</div>
-            </div>
-          `;
+          return '<div class="compare-board"><div class="compare-side">' + escapeHtml(visual.left) + '</div><div class="compare-symbol">○</div><div class="compare-side">' + escapeHtml(visual.right) + '</div></div>';
         }
-        if (visual.type === "place-add") {
-          const tensA = Array.from({ length: visual.tensA }, () => '<span class="ten-card">10根</span>').join("");
-          const onesA = Array.from({ length: visual.onesA }, () => '<span class="one-card"></span>').join("");
-          const tensB = Array.from({ length: visual.tensB }, () => '<span class="ten-card" style="background:#dff0ff;">10根</span>').join("");
-          const onesB = Array.from({ length: visual.onesB }, () => '<span class="one-card" style="background:var(--green);"></span>').join("");
-          return `
-            <div class="visual-stage">
-              <div class="visual-caption">第一堆：${visual.tensA} 个十和 ${visual.onesA} 个一</div>
-              <div class="place-row">${tensA}${onesA}</div>
-              <strong style="font-size:34px;">加上</strong>
-              <div class="place-row">${tensB}${onesB}</div>
-              <div class="visual-caption">先把一合起来，再把十合起来。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "number-line") {
-          const stepText = visual.steps.join("，再 ");
-          return `
-            <div class="visual-stage">
-              <div class="number-line">
-                <div class="line-track">
-                  <span class="line-hop large"></span>
-                  <span class="line-hop small"></span>
-                </div>
-                <div class="line-markers">
-                  <span>${visual.start}</span>
-                  <span>${stepText}</span>
-                  <span>${visual.end}</span>
-                </div>
-              </div>
-              <div class="visual-caption">沿着数轴跳一跳，再把落点写下来。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "step-cards") {
-          const cards = visual.cards.map((card, index) => `<span class="step-card ${index === visual.cards.length - 1 ? "answer-slot" : ""}">${card}</span>`).join("");
-          return `
-            <div class="visual-stage">
-              <div class="step-strip">${cards}</div>
-              <div class="visual-caption">按卡片顺序算，最后一张就是答案。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "ten-frame") {
-          const total = visual.base + visual.add;
-          const dots = Array.from({ length: 10 }, (_, index) => {
-            const className = index < visual.base ? "filled" : index < Math.min(total, 10) ? "add" : "";
-            return `<span class="ten-dot ${className}"></span>`;
+        if (visual.type === "groups") {
+          const total = visual.groups * visual.each;
+          const groups = Array.from({length: visual.groups}, (_, g) => {
+            const objects = Array.from({length: visual.each}, (_, j) => {
+              const removed = visual.op === "−" && g * visual.each + j >= total - visual.change;
+              return '<span class="group-object' + (removed ? ' removed' : '') + '" aria-label="' + (removed ? '划去的物品' : '物品') + '">' + escapeHtml(visual.icon) + '</span>';
+            }).join("");
+            return '<div class="object-group" aria-label="第' + (g + 1) + '组，共' + visual.each + visual.unit + '">' + objects + '</div>';
           }).join("");
-          return `
-            <div class="visual-stage">
-              <div class="ten-frame">${dots}</div>
-              <div class="visual-caption">先凑满 10，再把剩下的数接着加。</div>
-            </div>
-          `;
+          const extra = visual.op === "+" ? '<div class="extra-objects" aria-label="另外增加的物品">' + Array.from({length: visual.change}, () => '<span class="group-object added" aria-label="新增物品">' + escapeHtml(visual.icon) + '</span>').join("") + '</div>' : "";
+          return '<div class="group-scene">' + groups + '</div>' + extra;
         }
-        if (visual.type === "sticks") {
-          const bundles = Array.from({ length: visual.tens || 0 }, () => {
-            const sticks = Array.from({ length: 10 }, () => '<span class="mini-stick"></span>').join("");
-            return `<div class="stick-bundle" aria-label="一组十根小棒">${sticks}</div>`;
-          }).join("");
-          const ones = Array.from({ length: visual.ones || 0 }, () => '<span class="loose-stick"></span>').join("");
-          const added = Array.from({ length: visual.addOnes || 0 }, () => '<span class="loose-stick added"></span>').join("");
-          return `
-            <div class="visual-stage">
-              <div class="stick-display">
-                <div class="stick-display-row">${bundles}</div>
-                <div class="stick-display-row">
-                  <div class="loose-stick-row">${ones}</div>
-                  <strong style="font-size:34px;">+</strong>
-                  <div class="loose-stick-row">${added}</div>
-                </div>
-              </div>
-              <div class="visual-caption">上面是十位小屋，下面是个位小棒。满 10 根就想成 1 个十。</div>
-            </div>
-          `;
+        if (visual.type === "price-table") {
+          return '<table class="price-table"><caption>文具价格表</caption><thead><tr><th scope="col">文具</th><th scope="col">单价</th></tr></thead><tbody>' +
+            visual.rows.map(row => '<tr><th scope="row">' + escapeHtml(row.name) + '</th><td>' + row.price + '元／' + escapeHtml(row.unit) + '</td></tr>').join("") + '</tbody></table>';
         }
-        if (visual.type === "money") {
-          const tens = Array.from({ length: visual.tens }, () => '<span class="money-ten">10元</span>').join("");
-          const ones = Array.from({ length: visual.ones }, () => '<span class="coin-one">1</span>').join("");
-          return `
-            <div class="visual-stage">
-              <div class="money-row">${tens}${ones}</div>
-              <div class="visual-caption">${visual.tens} 个十和 ${visual.ones} 个一，合起来是多少？</div>
-            </div>
-          `;
+        return '<p class="visual-caption">' + escapeHtml(visual.text || "") + '</p>';
+      }
+
+      function activeQuestion() {
+        const question = questions[currentQuestionIndex];
+        return question.steps ? { ...question, ...question.steps[currentStepIndex] } : question;
+      }
+
+      function renderStep() {
+        const active = activeQuestion();
+        hintLevel = 0;
+        draggedAnswerValue = null;
+        draggedAnswerButton = null;
+        questionPrompt.textContent = active.prompt;
+        questionResult.textContent = "读清题目，再试一试。";
+        questionAnswerPanel.classList.remove("correct", "wrong");
+        questionAnswerInput.value = "";
+        questionAnswerInput.min = "0";
+        questionAnswerInput.max = "100";
+        questionAnswerInput.step = "1";
+        if (active.constraint || active.blankKind === "factor") {
+          questionAnswerInput.min = "1";
+          questionAnswerInput.max = "9";
+        } else if (active.blankKind === "offset") {
+          questionAnswerInput.max = "19";
         }
-        if (visual.type === "truck") {
-          const crates = Array.from({ length: 6 }, () => '<span class="crate">箱</span>').join("");
-          return `
-            <div class="visual-stage">
-              <div class="truck-scene">
-                <div class="truck"></div>
-                <div class="box-row">${crates}</div>
-              </div>
-              <div class="visual-caption">原来 ${visual.total} 箱，运走 ${visual.moved} 箱，求还剩。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "apples") {
-          const groups = Array.from({ length: visual.total / visual.each }, () => '<span class="apple-box">8</span>').join("");
-          return `
-            <div class="visual-stage">
-              <div class="apple-row">${groups}</div>
-              <div class="visual-caption">每次运 8 箱，看看 24 里面有几个 8。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "story") {
-          return `
-            <div class="visual-stage">
-              <div class="story-card">
-                <div class="story-icon" aria-hidden="true">${visual.icon || "题"}</div>
-                <div class="story-text">读一读题目，先找总数，再找已知部分。</div>
-              </div>
-            </div>
-          `;
-        }
-        if (visual.type === "hundred") {
-          const center = Number(visual.center);
-          return `
-            <div class="visual-stage">
-              <div class="hundred-mini" aria-label="百数表九宫格">
-                <span></span><span>${center - 10}</span><span></span>
-                <span>${center - 1}</span><span class="center">${center}</span><span>${center + 1}</span>
-                <span></span><span>${center + 10}</span><span></span>
-              </div>
-              <div class="visual-caption">中间是 ${center}，上少 10，下多 10，左少 1，右多 1。</div>
-            </div>
-          `;
-        }
-        if (visual.type === "shapes") {
-          const shapeMap = {
-            "长方形": "shape-rect",
-            "正方形": "shape-square",
-            "圆形": "shape-circle",
-            "三角形": "shape-triangle"
-          };
-          const shapes = visual.shapes.flatMap(([name, count]) => Array.from({ length: count }, () => name));
-          const shapeItems = shapes.sort(() => Math.random() - 0.5).map((name) => `<span class="shape-item ${shapeMap[name]}" title="${name}"></span>`).join("");
-          return `
-            <div class="visual-stage">
-              <div class="shape-scene">${shapeItems}</div>
-              <div class="visual-caption">先按形状分一分，再数题目问的图形。</div>
-            </div>
-          `;
-        }
-        return "";
+        renderInteraction(active);
       }
 
       function renderQuestion(question) {
+        currentStepIndex = 0;
         questionLabel.textContent = question.label;
         questionTitle.textContent = question.title;
         questionProgress.textContent = `第 ${currentQuestionIndex + 1} / ${questions.length} 题`;
@@ -2856,7 +2408,7 @@
         questionResult.textContent = "先动手试一试，再写答案。";
         questionAnswerPanel.classList.remove("correct", "wrong");
         questionAnswerInput.value = "";
-        renderInteraction(question);
+        renderStep();
         rewardTitle.textContent = question.rewardTitle;
         rewardText.textContent = question.rewardText;
         medal.textContent = question.medalText;
@@ -2927,8 +2479,13 @@
       renderQuestion(questions[currentQuestionIndex]);
 
       questionAction.addEventListener("click", () => {
-        questionResult.textContent = questions[currentQuestionIndex].hint;
+        showHint();
       });
+
+      function showHint() {
+        const active = activeQuestion();
+        questionResult.textContent = hintLevel++ === 0 ? active.hint : active.explanation;
+      }
 
       function markWrong(target) {
         if (target) {
@@ -2941,14 +2498,26 @@
       }
 
       function checkQuestionAnswer(selectedValue, target) {
-        const currentQuestion = questions[currentQuestionIndex];
+        if (rewardModal.classList.contains("show") || grandRewardModal.classList.contains("show")) return;
+        const currentQuestion = activeQuestion();
         const rawAnswer = selectedValue ?? questionAnswerInput.value;
+        if (String(rawAnswer).trim() === "") {
+          questionResult.textContent = "先填写一个答案，0也可以写出来。";
+          return;
+        }
         const answer = typeof currentQuestion.answer === "number" ? Number(rawAnswer) : String(rawAnswer);
         questionAnswerPanel.classList.remove("correct", "wrong");
         choicePanel.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
         dragChoiceRow.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
         tapPanel.querySelectorAll("button").forEach((button) => button.classList.remove("correct", "wrong"));
         if (answer === currentQuestion.answer) {
+          const root = questions[currentQuestionIndex];
+          if (root.steps && currentStepIndex < root.steps.length - 1) {
+            currentStepIndex += 1;
+            renderStep();
+            questionResult.textContent = "这一步答对啦！接着完成下一步。";
+            return;
+          }
           questionAnswerPanel.classList.add("correct");
           if (target) target.classList.add("correct");
           const isFirstCorrect = !completedQuestions.has(currentQuestionIndex);
@@ -2967,12 +2536,9 @@
           rewardModal.setAttribute("aria-hidden", "false");
         } else {
           markWrong(target);
-          questionResult.textContent = currentQuestion.hint;
+          showHint();
         }
       }
-
-      let draggedAnswerValue = null;
-      let draggedAnswerButton = null;
 
       answerPocket.addEventListener("dragover", (event) => {
         event.preventDefault();
@@ -2994,8 +2560,7 @@
       });
 
       function createNewQuestionSet() {
-        if (!window.QuietBookQuestionGenerator) return;
-        questions = normalizeQuestionSet(window.QuietBookQuestionGenerator.generateQuestionSet());
+        questions = normalizeQuestionSet(getQuestionSet());
         completedQuestions.clear();
         pendingGrandReward = false;
         currentQuestionIndex = 0;
@@ -3035,94 +2600,6 @@
         showPage("home");
       });
 
-      document.querySelector("#lidButton").addEventListener("click", () => {
-        document.querySelector("#hiddenCount").classList.toggle("show");
-      });
-
-      const moonPile = document.querySelector("#moonPile");
-      for (let i = 1; i <= 13; i += 1) {
-        const moon = document.createElement("span");
-        moon.className = "moon";
-        moon.textContent = i <= 10 ? "月" : "剩";
-        moonPile.appendChild(moon);
-      }
-
-      const hundredGrid = document.querySelector("#hundredGrid");
-      const hundredResult = document.querySelector("#hundredResult");
-      const targets = new Set([14, 23, 24, 25, 34]);
-      for (let i = 1; i <= 100; i += 1) {
-        const cell = document.createElement("button");
-        cell.className = "num-cell";
-        cell.type = "button";
-        cell.textContent = i;
-        cell.addEventListener("click", () => {
-          cell.classList.toggle("marked");
-          const markedTargets = Array.from(hundredGrid.querySelectorAll(".marked"))
-            .filter((item) => targets.has(Number(item.textContent))).length;
-          hundredResult.textContent = `已涂 ${markedTargets} 个目标格。目标是 14、23、24、25、34。`;
-        });
-        hundredGrid.appendChild(cell);
-      }
-
-      let draggedCard = null;
-      const dropZone = document.querySelector("#dropZone");
-      const dropItems = document.querySelector("#dropItems");
-      const dragResult = document.querySelector("#dragResult");
-
-      document.querySelectorAll(".drag-item").forEach((item) => {
-        item.addEventListener("dragstart", () => { draggedCard = item; });
-        item.addEventListener("click", () => {
-          handleStaticDragAnswer(item);
-        });
-      });
-
-      function handleStaticDragAnswer(card) {
-        const value = Number(card.dataset.value);
-        if (value > 10) {
-          dropItems.appendChild(card);
-          const count = dropItems.querySelectorAll(".drag-item").length;
-          dragResult.textContent = count >= 3 ? "完成！大于 10 的答案已经放进口袋。" : `已经放入 ${count} 张正确答案卡。`;
-        } else {
-          dragResult.textContent = `${value} 没有大于 10，先放回答案卡区。`;
-        }
-      }
-
-      dropZone.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        dropZone.classList.add("over");
-      });
-      dropZone.addEventListener("dragleave", () => dropZone.classList.remove("over"));
-      dropZone.addEventListener("drop", (event) => {
-        event.preventDefault();
-        dropZone.classList.remove("over");
-        if (!draggedCard) return;
-        handleStaticDragAnswer(draggedCard);
-        draggedCard = null;
-      });
-
-      const paintGrid = document.querySelector("#paintGrid");
-      const paintResult = document.querySelector("#paintResult");
-      let activeColor = "color-a";
-      document.querySelectorAll(".color-tool").forEach((tool) => {
-        tool.addEventListener("click", () => {
-          document.querySelectorAll(".color-tool").forEach((item) => item.classList.remove("active"));
-          tool.classList.add("active");
-          activeColor = tool.dataset.color;
-        });
-      });
-      for (let i = 1; i <= 50; i += 1) {
-        const cell = document.createElement("button");
-        cell.className = "paint-cell";
-        cell.type = "button";
-        cell.textContent = i;
-        cell.addEventListener("click", () => {
-          cell.classList.remove("color-a", "color-b", "color-c");
-          if (activeColor) cell.classList.add(activeColor);
-          const yellowCount = paintGrid.querySelectorAll(".color-a").length;
-          paintResult.textContent = yellowCount >= 5 ? "完成！已经涂出 5 个黄色答案格。" : `已经涂了 ${yellowCount} 个黄色格子。`;
-        });
-        paintGrid.appendChild(cell);
-      }
     </script>
   </body>
 </html>

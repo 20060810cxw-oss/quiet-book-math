@@ -1,716 +1,241 @@
 (function (global) {
-  const BASIC_COUNT = 6;
-  const QUESTION_COUNT = 15;
-
-  const pick = (items) => items[Math.floor(Math.random() * items.length)];
+  "use strict";
+  const QUESTION_COUNT = 18;
+  const BASIC_COUNT = 1;
+  const COUNTS = { oral: 1, mixed: 2, extremum: 3, blank: 2, compare: 1, picture: 2, word: 6, extension: 1 };
   const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const pick = (items) => items[rand(0, items.length - 1)];
   const shuffle = (items) => {
     const copy = [...items];
-    for (let i = copy.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = rand(0, i);
       [copy[i], copy[j]] = [copy[j], copy[i]];
     }
     return copy;
   };
-
+  const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => i + min);
+  const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  function numberWords(n) {
+    if (n < 10) return digits[n];
+    return (n >= 20 ? digits[Math.floor(n / 10)] : "") + "十" + (digits[n % 10] || "");
+  }
+  function formula(a, b) {
+    const [x, y] = [a, b].sort((u, v) => u - v);
+    return digits[x] + digits[y] + (x * y < 10 ? "得" : "") + numberWords(x * y);
+  }
+  function model(a = rand(1, 9), b = rand(1, 9), op = "", c = 0) { return { a, b, op, c }; }
+  function value(m) { return m.a * m.b + (m.op === "+" ? m.c : m.op === "−" ? -m.c : 0); }
+  function expression(m) { return m.a + " × " + m.b + (m.op ? " " + m.op + " " + m.c : ""); }
+  function mixedModel(op) {
+    const m = model();
+    m.op = op;
+    m.c = rand(1, Math.min(19, op === "+" ? 100 - m.a * m.b : m.a * m.b));
+    return m;
+  }
   function uniqueOptions(answer, min = 0, max = 100) {
-    const distractors = new Set();
-    const offsets = shuffle([-10, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 10]);
-    offsets.forEach((offset) => {
-      const value = answer + offset;
-      if (value >= min && value <= max && value !== answer) distractors.add(value);
-    });
-    let guard = 0;
-    while (distractors.size < 3 && guard < 200) {
-      const value = rand(min, max);
-      if (value !== answer) distractors.add(value);
-      guard += 1;
-    }
-    for (let value = 0; distractors.size < 3 && value <= 100; value += 1) {
-      if (value !== answer) distractors.add(value);
-    }
-    return shuffle([answer, ...shuffle([...distractors]).slice(0, 3)]);
+    const nearby = range(min, max).filter(n => n !== answer && Math.abs(n - answer) <= 12);
+    const pool = nearby.length >= 3 ? nearby : range(min, max).filter(n => n !== answer);
+    return shuffle([answer, ...shuffle(pool).slice(0, 3)]);
   }
-
-  function expressionValue(expression) {
-    const tokens = String(expression).match(/\d+|[+-]/g) || [];
-    let total = Number(tokens[0] || 0);
-    for (let i = 1; i < tokens.length; i += 2) {
-      const op = tokens[i];
-      const value = Number(tokens[i + 1]);
-      total = op === "+" ? total + value : total - value;
-    }
-    return total;
+  function numeric(answer, mode = pick(["input", "choice", "drag", "tap"])) {
+    return { answer, mode, options: uniqueOptions(answer) };
   }
-
-  function makeQuestion(base) {
+  function hints(m) {
     return {
-      mode: "input",
-      medalText: base.medalText || "奖",
-      rewardTitle: base.rewardTitle || "获得数学奖章！",
-      rewardText: base.rewardText || "你认真完成了一道题。",
-      success: base.success || "答对啦！继续保持。",
-      actionText: base.actionText || "看提示",
-      ...base
+      hint: m.op ? "先算乘法，再算加减。想想对应的乘法口诀。" : "想一想：" + digits[Math.min(m.a, m.b)] + digits[Math.max(m.a, m.b)] + "这句口诀。",
+      explanation: "口诀“" + formula(m.a, m.b) + "”。" + expression(m) + " = " + value(m) + "。"
     };
   }
-
-  function makeBasicCalculation() {
-    const kind = pick(["add2", "sub2", "add1Carry", "sub1Borrow", "chain", "chain3"]);
-    if (kind === "add2") {
-      const a = rand(12, 67);
-      const b = rand(11, Math.min(99 - a, 29));
-      const answer = a + b;
-      return makeQuestion({
-        category: "basic",
-        label: "基础口算",
-        title: `${a} + ${b} = ?`,
-        prompt: "先算个位，再算十位，把最后答案写出来。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `可以先分成十位和个位来算：${a} + ${b} = ${answer}。`,
-        visual: { type: "equation", parts: [a, "+", b, "="] },
-        medalText: "算"
-      });
+  function question(category, label, fields) {
+    return {
+      category, label, mode: "input", medalText: "思", actionText: "想一想",
+      rewardTitle: "收获一枚思考奖章！", rewardText: "你读懂了题目，也认真检查了答案。",
+      success: "答对啦！你的思路很清楚。",
+      ...fields
+    };
+  }
+  function oral() {
+    const m = model();
+    return question("oral", "乘法口算", { title: expression(m) + " = □", prompt: "想口诀，求出积。",
+      ...numeric(value(m)), ...hints(m), visual: { type: "equation", parts: [m.a, "×", m.b, "="] }, math: m });
+  }
+  function mixed(op) {
+    const m = mixedModel(op);
+    return question("mixed", op === "+" ? "乘加计算" : "乘减计算", { title: expression(m) + " = □",
+      prompt: "先算乘法，再算加减。", ...numeric(value(m)), ...hints(m),
+      visual: { type: "equation", parts: [m.a, "×", m.b, op, m.c, "="] }, math: m });
+  }
+  function extremum(kind) {
+    const max = kind === "max" || (kind === "mixed" && Math.random() < 0.5);
+    const b = rand(2, 9), boundary = rand(2, 8);
+    const op = kind === "mixed" ? pick(["+", "−"]) : "";
+    const c = op ? rand(1, op === "−" ? Math.min(19, b) : 19) : 0;
+    const offset = op === "+" ? c : op === "−" ? -c : 0;
+    const limit = boundary * b + offset + (max ? 1 : -1);
+    const solutions = range(1, 9).filter(x => max ? x * b + offset < limit : x * b + offset > limit);
+    const answer = max ? Math.max(...solutions) : Math.min(...solutions);
+    const relation = max ? "<" : ">";
+    return question("extremum", max ? "最大能填几" : "最小能填几", {
+      title: "□ × " + b + (op ? " " + op + " " + c : "") + " " + relation + " " + limit,
+      prompt: "□里填1—9中的整数，" + (max ? "最大" : "最小") + "能填几？",
+      ...numeric(answer, "input"), hint: "把1—9代进去试一试。注意要严格" + (max ? "小于" : "大于") + "，不能相等。",
+      explanation: "符合条件的数是 " + solutions.join("、") + "，所以" + (max ? "最大" : "最小") + "填 " + answer + "。",
+      visual: { type: "instruction", text: "可选整数：1、2、3、4、5、6、7、8、9" },
+      constraint: { b, op, c, limit, relation, seek: max ? "max" : "min" }
+    });
+  }
+  function blank(kind) {
+    const m = kind === "factor" ? model() : mixedModel(pick(["+", "−"]));
+    const answer = kind === "factor" ? m.a : m.c;
+    const text = kind === "factor" ? "□ × " + m.b + " = " + value(m)
+      : m.a + " × " + m.b + " " + m.op + " □ = " + value(m);
+    return question("blank", kind === "factor" ? "乘数填空" : "加减数填空", {
+      title: text, prompt: kind === "factor" ? "□里填1—9中的整数。" : "□里填0—19中的整数。",
+      ...numeric(answer, pick(["input", "choice"])), options: uniqueOptions(answer, kind === "factor" ? 1 : 0, kind === "factor" ? 9 : 19),
+      hint: kind === "factor" ? "想一想哪句口诀的积是" + value(m) + "。" : "先算出乘法的积，再想它怎样变成右边的数。",
+      explanation: expression(m) + " = " + value(m) + "，所以填 " + answer + "。",
+      visual: { type: "instruction", text: "让等号两边一样大。" }, math: m, blankKind: kind
+    });
+  }
+  function compare() {
+    const left = Math.random() < 0.5 ? model() : mixedModel(pick(["+", "−"]));
+    const useNumber = Math.random() < 0.6;
+    const right = useNumber ? null : model();
+    const rightValue = useNumber ? pick([value(left), rand(0, 100)]) : value(right);
+    const answer = value(left) < rightValue ? "<" : value(left) > rightValue ? ">" : "=";
+    return question("compare", "比大小", {
+      title: expression(left) + " ○ " + (right ? expression(right) : rightValue),
+      prompt: "分别算出两边的结果，再选符号。", answer, mode: "compare", options: ["<", ">", "="],
+      hint: "先算乘法，再算加减。相同大小要选等号。",
+      explanation: "左边是" + value(left) + "，右边是" + rightValue + "，所以选 " + answer + "。",
+      visual: { type: "compare", left: expression(left), right: right ? expression(right) : rightValue },
+      left, right, rightValue
+    });
+  }
+  function expressionOptions(m) {
+    const answer = expression(m);
+    // Exclude numerically equivalent distractors, including exchanged factors.
+    const candidates = [];
+    for (let a = 1; a <= 9; a++) for (let b = 1; b <= 9; b++) {
+      const candidate = model(a, b, m.op, m.c);
+      if (value(candidate) >= 0 && value(candidate) <= 100 && value(candidate) !== value(m)) candidates.push(expression(candidate));
     }
-    if (kind === "sub2") {
-      const a = rand(35, 99);
-      const b = rand(11, Math.min(49, a - 5));
-      const answer = a - b;
-      return makeQuestion({
-        category: "basic",
-        label: "基础口算",
-        title: `${a} - ${b} = ?`,
-        prompt: "看清减号，先减整十，再减个位。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `求少了多少，用减法：${a} - ${b} = ${answer}。`,
-        visual: { type: "number-line", start: a, steps: [`-${Math.floor(b / 10) * 10}`, `-${b % 10}`], end: "?" },
-        medalText: "减"
-      });
+    return shuffle([answer, ...shuffle(candidates).slice(0, 3)]);
+  }
+  function scene(m, icon = "●", unit = "个") {
+    return { type: "groups", groups: m.b, each: m.a, op: m.op, change: m.c, icon, unit };
+  }
+  function picture(changed) {
+    const m = model(rand(2, 9), rand(2, 6));
+    if (changed) { m.op = pick(["+", "−"]); m.c = rand(1, m.a - 1); }
+    return question("picture", changed ? "看图乘加减" : "看图列式", {
+      title: "看图选算式：现在一共有多少个？",
+      prompt: "每组" + m.a + "个，共" + m.b + "组。" + (m.op === "+" ? "另有" + m.c + "个。" : m.op === "−" ? "划去" + m.c + "个。" : ""),
+      answer: expression(m), mode: "choice", options: expressionOptions(m), ...hints(m),
+      visual: scene(m), math: m
+    });
+  }
+  function word(kind) {
+    const m = kind === "add" ? mixedModel("+") : kind === "subtract" ? mixedModel("−") : model();
+    let title, unit = "个", visual, needed;
+    const goods = [
+      { name: "铅笔", unit: "支" }, { name: "橡皮", unit: "块" }, { name: "尺子", unit: "把" },
+      { name: "练习本", unit: "本" }
+    ];
+    if (kind === "total") {
+      title = "每盘有" + m.a + "个苹果，" + m.b + "盘一共有多少个苹果？";
+      visual = scene(m, "🍎");
+    } else if (kind === "price") {
+      const item = pick(goods);
+      title = item.name + "每" + item.unit + m.a + "元，买" + m.b + item.unit + "，一共需要多少钱？";
+      unit = "元"; visual = { type: "instruction", text: "每" + item.unit + m.a + "元，共买" + m.b + item.unit + "。" };
+    } else if (kind === "add" || kind === "subtract") {
+      title = m.b + "盒彩笔，每盒" + m.a + "支，" + (kind === "add" ? "另外还有" : "送出") + m.c + "支，" + (kind === "add" ? "一共有" : "还剩") + "多少支？";
+      unit = "支"; visual = scene(m, "●", "支");
+    } else if (kind === "enough") {
+      needed = Math.max(1, Math.min(100, value(m) + pick([-3, 0, 4])));
+      title = "每张桌子坐" + m.a + "人，" + m.b + "张桌子，能坐下" + needed + "人吗？";
+      unit = "人"; visual = { type: "instruction", text: "需要安排" + needed + "人入座。" };
+    } else {
+      const target = rand(0, 3);
+      const rows = goods.map((g, i) => ({ ...g, price: i === target ? m.a : rand(1, 9) }));
+      const item = rows[target];
+      title = "看价格表，买" + m.b + item.unit + item.name + "需要多少钱？";
+      unit = "元"; visual = { type: "price-table", rows, target, count: m.b };
     }
-    if (kind === "add1Carry") {
-      const tens = rand(2, 8);
-      const ones = rand(3, 9);
-      const add = rand(10 - ones, 9);
-      const a = tens * 10 + ones;
-      const answer = a + add;
-      return makeQuestion({
-        category: "basic",
-        label: "进位加法",
-        title: `${a} + ${add} = ?`,
-        prompt: "个位相加满 10，就可以想成 1 个十。",
-        answer,
-        mode: pick(["input", "drag", "tap"]),
-        options: uniqueOptions(answer),
-        hint: `先算 ${ones} + ${add} = ${ones + add}，再和 ${tens} 个十合起来，答案是 ${answer}。`,
-        visual: { type: "sticks", tens, ones, addOnes: add },
-        medalText: "棒"
-      });
-    }
-    if (kind === "sub1Borrow") {
-      const tens = rand(3, 9);
-      const ones = rand(0, 5);
-      const sub = rand(ones + 1, 9);
-      const a = tens * 10 + ones;
-      const answer = a - sub;
-      return makeQuestion({
-        category: "basic",
-        label: "退位减法",
-        title: `${a} - ${sub} = ?`,
-        prompt: "个位不够减，先借 1 个十再算。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `把 1 个十拆成 10 个一，${10 + ones} - ${sub} = ${10 + ones - sub}，答案是 ${answer}。`,
-        visual: { type: "number-line", start: a, steps: [`-${sub}`], end: "?" },
-        medalText: "退"
-      });
-    }
-    if (kind === "chain3") {
-      const a = rand(45, 88);
-      const b = rand(6, 19);
-      const c = rand(4, 18);
-      const d = rand(3, 16);
-      const patterns = [
-        `${a} - ${b} + ${c} - ${d}`,
-        `${a} + ${b} - ${c} - ${d}`,
-        `${a} - ${b} - ${d} + ${c}`
+    const enough = value(m) >= needed;
+    const steps = [
+      { mode: "choice", answer: expression(m), options: expressionOptions(m), prompt: "第一步：选出符合题意的算式。",
+        hint: "找到每份的数量和份数，再看有没有增加或减少。", explanation: "对应的算式是 " + expression(m) + "。" },
+      kind === "enough"
+        ? { mode: "choice", answer: enough ? "够" : "不够", options: ["够", "不够"],
+            prompt: "第二步：算出能坐多少人，再判断够不够。", hint: "座位数和人数一样，也算够。",
+            explanation: expression(m) + " = " + value(m) + "，需要" + needed + "个座位，所以" + (enough ? "够。" : "不够。") }
+        : { ...numeric(value(m), "input"), prompt: "第二步：计算结果，填写多少" + unit + "。",
+            ...hints(m) }
+    ];
+    const labels = { total: "求总数", price: "求总价", add: "增加应用", subtract: "减少应用", enough: "够不够", table: "读表选条件" };
+    return question("word", labels[kind], {
+      title, prompt: steps[0].prompt, answer: steps[1].answer, mode: steps[0].mode,
+      options: steps[0].options, steps, visual, math: m, wordKind: kind, needed, unit,
+      hint: steps[0].hint, explanation: steps[1].explanation
+    });
+  }
+  let extensionCursor = rand(0, 2);
+  function extension(kind) {
+    const m = model(rand(2, 9), rand(2, 8));
+    if (kind === 0) {
+      const shown = Math.random() < 0.5 ? value(m) : value(m) + 1;
+      const steps = [
+        { mode: "choice", options: ["对", "不对"], answer: shown === value(m) ? "对" : "不对",
+          prompt: "第一步：判断这道算式。", ...hints(m) },
+        { ...numeric(value(m), "input"), prompt: "第二步：写出正确的积。", ...hints(m) }
       ];
-      const expression = pick(patterns);
-      const answer = expressionValue(expression);
-      return makeQuestion({
-        category: "basic",
-        label: "连加连减",
-        title: `${expression} = ?`,
-        prompt: "三步连算要从左往右，每算一步都看清符号。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `按顺序一步一步算：${expression} = ${answer}。`,
-        visual: { type: "step-cards", cards: expression.split(" ").concat(["?"]) },
-        medalText: "序"
-      });
+      return question("extension", "判断纠错", { title: expression(m) + " = " + shown + "，对吗？",
+        steps, answer: steps[1].answer, mode: "choice", options: steps[0].options,
+        prompt: steps[0].prompt, ...hints(m), visual: { type: "instruction", text: "想口诀，核对积。" }, math: m, shown });
     }
-    const a = rand(20, 80);
-    const b = rand(3, 18);
-    const c = rand(2, 15);
-    const usePlus = Math.random() > 0.45;
-    const expression = usePlus ? `${a} - ${b} + ${c}` : `${a} + ${b} - ${c}`;
-    const answer = expressionValue(expression);
-    return makeQuestion({
-      category: "basic",
-      label: "连加连减",
-      title: `${expression} = ?`,
-      prompt: "连算题从左往右，一步一步算。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint: `按顺序算：${expression} = ${answer}。`,
-      visual: { type: "step-cards", cards: expression.split(" ").concat(["?"]) },
-      medalText: "序"
-    });
-  }
-
-  function makeCompareQuestion() {
-    const left = pick([`${rand(20, 80)} + ${rand(2, 18)}`, `${rand(30, 99)} - ${rand(2, 29)}`, String(rand(20, 99))]);
-    const right = pick([`${rand(20, 80)} + ${rand(2, 18)}`, `${rand(30, 99)} - ${rand(2, 29)}`, String(rand(20, 99))]);
-    const leftValue = expressionValue(left);
-    const rightValue = expressionValue(right);
-    const answer = leftValue > rightValue ? ">" : leftValue < rightValue ? "<" : "=";
-    return makeQuestion({
-      label: "比大小",
-      title: `${left}  ?  ${right}`,
-      prompt: "先把两边都算出来，再选 >、< 或 =。",
-      answer,
-      mode: "compare",
-      options: [">", "<", "="],
-      hint: `左边是 ${leftValue}，右边是 ${rightValue}，所以选 ${answer}。`,
-      visual: { type: "compare", left, right },
-      medalText: "比"
-    });
-  }
-
-  function makeInequalityBlankQuestion() {
-    const kind = pick(["addLessMax", "subGreaterMax", "addGreaterMin"]);
-    if (kind === "addLessMax") {
-      const a = rand(18, 70);
-      const limit = rand(a + 6, Math.min(99, a + 24));
-      const answer = limit - a - 1;
-      return makeQuestion({
-        label: "最大能填几",
-        title: `${a} + (  ) < ${limit}`,
-        prompt: "括号里最大能填几？填最大的那个数。",
-        answer,
-        mode: "input",
-        hint: `${limit} - ${a} = ${limit - a}，要比 ${limit} 小，所以最大填 ${answer}。`,
-        visual: { type: "compare", left: `${a} + ( )`, right: `${limit}` },
-        medalText: "大"
-      });
+    if (kind === 1) {
+      return question("extension", "乘法意义", { title: m.b + "个" + m.a + "，选哪个乘法算式？",
+        prompt: "注意：“几个几”和“几与几”意思不一样。",
+        answer: expression(m), mode: "choice", options: shuffle([expression(m), m.a + " + " + m.b, expression(model(m.a, m.b - 1)), expression(model(m.a, m.b + 1))]),
+        hint: "每份一样多，可以用乘法。", explanation: m.b + "个" + m.a + "，可以列式 " + expression(m) + "。",
+        visual: scene(m), math: m });
     }
-    if (kind === "subGreaterMax") {
-      const a = rand(35, 90);
-      const limit = rand(8, a - 8);
-      const answer = a - limit - 1;
-      return makeQuestion({
-        label: "最大能填几",
-        title: `${a} - (  ) > ${limit}`,
-        prompt: "括号里最大能填几？注意结果要比右边大。",
-        answer,
-        mode: "input",
-        hint: `${a} - ${limit} = ${a - limit}，要还大一点，所以最大填 ${answer}。`,
-        visual: { type: "compare", left: `${a} - ( )`, right: `${limit}` },
-        medalText: "大"
-      });
-    }
-    const a = rand(10, 60);
-    const limit = rand(a + 6, Math.min(99, a + 28));
-    const answer = limit - a + 1;
-    return makeQuestion({
-      label: "最小能填几",
-      title: `${a} + (  ) > ${limit}`,
-      prompt: "括号里最小能填几？填刚刚超过右边的数。",
-      answer,
-      mode: "input",
-      hint: `${limit} - ${a} = ${limit - a}，要比 ${limit} 大，所以最小填 ${answer}。`,
-      visual: { type: "compare", left: `${a} + ( )`, right: `${limit}` },
-      medalText: "小"
+    const start = rand(1, 5), missing = rand(1, 3);
+    const terms = range(start, start + 4).map(x => x * m.a);
+    return question("extension", "口诀规律", {
+      title: terms.map((n, i) => i === missing ? "□" : n).join("、"),
+      prompt: "按同一句口诀表的顺序，把缺少的数补上。",
+      ...numeric(terms[missing], pick(["input", "tap", "drag"])),
+      hint: "看看相邻两个数相差几，再想对应的口诀。",
+      explanation: "依次是" + range(start, start + 4).map(x => m.a + "×" + x).join("、") + "，应填" + terms[missing] + "。",
+      visual: { type: "instruction", text: "每一步都按相同的规律变化。" }, pattern: { factor: m.a, start, missing }
     });
   }
-
-  function makeEquationBlankQuestion() {
-    const kind = pick(["missingAddend", "missingSubtrahend", "missingStart"]);
-    if (kind === "missingAddend") {
-      const a = rand(12, 70);
-      const missing = rand(2, Math.min(25, 99 - a));
-      const total = a + missing;
-      return makeQuestion({
-        label: "填括号",
-        title: `${a} + (  ) = ${total}`,
-        prompt: "想一想：还差多少能到右边的数？",
-        answer: missing,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(missing, 0, 30),
-        hint: `${total} - ${a} = ${missing}，所以括号里填 ${missing}。`,
-        visual: { type: "equation", parts: [a, "+", "( )", "=", total] },
-        medalText: "填"
-      });
-    }
-    if (kind === "missingSubtrahend") {
-      const a = rand(30, 99);
-      const answer = rand(2, Math.min(30, a - 5));
-      const result = a - answer;
-      return makeQuestion({
-        label: "填括号",
-        title: `${a} - (  ) = ${result}`,
-        prompt: "想一想：减去了多少？",
-        answer,
-        mode: pick(["input", "drag"]),
-        options: uniqueOptions(answer, 0, 35),
-        hint: `${a} - ${result} = ${answer}，所以括号里填 ${answer}。`,
-        visual: { type: "equation", parts: [a, "-", "( )", "=", result] },
-        medalText: "填"
-      });
-    }
-    const answer = rand(20, 70);
-    const sub = rand(2, 18);
-    const result = answer - sub;
-    return makeQuestion({
-      label: "填括号",
-      title: `(  ) - ${sub} = ${result}`,
-      prompt: "想一想：哪个数减去它，会得到右边的数？",
-      answer,
-      mode: "input",
-      hint: `${result} + ${sub} = ${answer}，所以括号里填 ${answer}。`,
-      visual: { type: "equation", parts: ["( )", "-", sub, "=", result] },
-      medalText: "填"
-    });
-  }
-
-  function makeTrueFalseQuestion() {
-    const a = rand(20, 80);
-    const b = rand(2, 18);
-    const op = pick(["+", "-"]);
-    const correct = op === "+" ? a + b : a - b;
-    const wrongPool = shuffle([-10, -3, -2, 2, 3, 10])
-      .map((offset) => correct + offset)
-      .filter((value) => value >= 0 && value <= 100 && value !== correct);
-    const shown = Math.random() > 0.45 || wrongPool.length === 0 ? correct : pick(wrongPool);
-    const answer = shown === correct ? "对" : "错";
-    return makeQuestion({
-      label: "判断改错",
-      title: `${a} ${op} ${b} = ${shown}`,
-      prompt: "这道算式算得对吗？先自己算一遍。",
-      answer,
-      mode: "choice",
-      options: ["对", "错"],
-      hint: `正确结果是 ${correct}，所以这道题是${answer}的。`,
-      visual: { type: "equation", parts: [a, op, b, "=", shown] },
-      medalText: "判"
-    });
-  }
-
-  function makePatternQuestion() {
-    const step = pick([3, 5, 7, 9, 10]);
-    const direction = pick(["+", "-"]);
-    const start = direction === "+" ? rand(10, 70 - step * 4) : rand(40 + step * 2, 99);
-    const sequence = Array.from({ length: 5 }, (_, index) => direction === "+" ? start + step * index : start - step * index);
-    const missingIndex = rand(1, 3);
-    const answer = sequence[missingIndex];
-    const shown = sequence.map((value, index) => index === missingIndex ? "(  )" : value).join("，");
-    return makeQuestion({
-      label: "找规律",
-      title: `${shown}`,
-      prompt: `这组数每次${direction === "+" ? "增加" : "减少"} ${step}，括号里填几？`,
-      answer,
-      mode: pick(["input", "tap"]),
-      options: uniqueOptions(answer),
-      hint: `规律是每次${direction === "+" ? "加" : "减"} ${step}，所以填 ${answer}。`,
-      visual: { type: "step-cards", cards: sequence.map((value, index) => index === missingIndex ? "?" : value) },
-      medalText: "律"
-    });
-  }
-
-  function makePlaceValueQuestion() {
-    const tens = rand(1, 8);
-    const ones = rand(0, 9);
-    const answer = tens * 10 + ones;
-    return makeQuestion({
-      label: "数位组成",
-      title: `${tens} 个十和 ${ones} 个一，合起来是多少？`,
-      prompt: "先看有几个十，再看有几个一。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint: `${tens} 个十是 ${tens * 10}，再加 ${ones} 个一，合起来是 ${answer}。`,
-      visual: { type: "money", tens, ones },
-      medalText: "位"
-    });
-  }
-
-  function makeHundredChartQuestion() {
-    const center = rand(22, 78);
-    const direction = pick([
-      ["上面", -10],
-      ["下面", 10],
-      ["左边", -1],
-      ["右边", 1]
-    ]);
-    const answer = center + direction[1];
-    return makeQuestion({
-      label: "百数表",
-      title: `${center} 的${direction[0]}是几？`,
-      prompt: "百数表里，上少 10，下多 10，左少 1，右多 1。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint: `${center} 的${direction[0]}是 ${answer}。`,
-      visual: { type: "hundred", center },
-      medalText: "百"
-    });
-  }
-
-  function makeHundredChartTwoStepQuestion() {
-    const center = rand(23, 77);
-    const moves = pick([
-      [["下面", 10], ["右边", 1]],
-      [["上面", -10], ["左边", -1]],
-      [["下面", 10], ["左边", -1]],
-      [["上面", -10], ["右边", 1]]
-    ]);
-    const answer = center + moves[0][1] + moves[1][1];
-    return makeQuestion({
-      label: "百数表",
-      title: `从 ${center} 开始，先到${moves[0][0]}，再到${moves[1][0]}，最后是几？`,
-      prompt: "百数表里移动两步：上少10，下多10，左少1，右多1。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint: `${center} 先变成 ${center + moves[0][1]}，再变成 ${answer}。`,
-      visual: { type: "hundred", center },
-      medalText: "百"
-    });
-  }
-
-  function makeMoneyQuestion() {
-    const kind = pick(["jiaoSum", "change", "leastBills"]);
-    if (kind === "jiaoSum") {
-      const first = rand(4, 9);
-      const second = rand(2, 9);
-      const total = first + second;
-      const yuan = Math.floor(total / 10);
-      const jiao = total % 10;
-      return makeQuestion({
-        label: "人民币",
-        title: `${first}角 + ${second}角 = 几角？`,
-        prompt: "先把角相加，满10角就是1元。",
-        answer: total,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(total, 0, 20),
-        hint: `${first} + ${second} = ${total}，也就是${yuan > 0 ? `${yuan}元` : ""}${jiao > 0 ? `${jiao}角` : ""}。`,
-        visual: { type: "equation", parts: [`${first}角`, "+", `${second}角`, "="] },
-        medalText: "钱"
-      });
-    }
-    if (kind === "change") {
-      const paid = pick([20, 50, 80, 100]);
-      const price = rand(Math.max(6, paid - 35), paid - 3);
-      const answer = paid - price;
-      return makeQuestion({
-        label: "人民币",
-        title: `买文具付了 ${paid} 元，找回 ${answer} 元，这件文具多少元？`,
-        prompt: "付出的钱减去找回的钱，就是物品价格。",
-        answer: price,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(price),
-        hint: `${paid} - ${answer} = ${price}，所以文具是 ${price} 元。`,
-        visual: { type: "story", icon: "钱" },
-        medalText: "钱"
-      });
-    }
-    const price = rand(21, 88);
-    const bill = pick([10, 20]);
-    const answer = Math.ceil(price / bill);
-    return makeQuestion({
-      label: "人民币",
-      title: `一盒彩笔 ${price} 元，如果全用 ${bill} 元纸币付，至少要付几张？`,
-      prompt: "要够付钱，不够时要再多付1张。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer, 1, 10),
-      hint: `${bill} 元一张，${answer - 1} 张还不够，至少要 ${answer} 张。`,
-      visual: { type: "story", icon: "钱" },
-      medalText: "钱"
-    });
-  }
-
-  function makePackingQuestion() {
-    const each = pick([4, 5, 6, 8, 10]);
-    const boxes = rand(3, 9);
-    const rest = rand(1, each - 1);
-    const total = each * boxes + rest;
-    const askBoxes = Math.random() > 0.45;
-    const answer = askBoxes ? boxes : rest;
-    return makeQuestion({
-      label: "装盒余数",
-      title: `${total} 个小点心，每 ${each} 个装一盒，可以装满${askBoxes ? "几盒" : "几盒后还剩几个"}？`,
-      prompt: "先一盒一盒地数，装满的盒子和剩下的要分清。",
-      answer,
-      mode: pick(["input", "choice", "tap"]),
-      options: uniqueOptions(answer, 0, 20),
-      hint: `${total} 里面有 ${boxes} 个 ${each}，还剩 ${rest} 个，所以答案是 ${answer}。`,
-      visual: { type: "story", icon: "盒" },
-      medalText: "盒"
-    });
-  }
-
-  function makeHiddenPartQuestion() {
-    const total = rand(24, 70);
-    const outside = rand(7, total - 12);
-    const answer = total - outside;
-    return makeQuestion({
-      label: "遮挡数量",
-      title: `一共有 ${total} 根小棒，外面看见 ${outside} 根，盒子里藏着几根？`,
-      prompt: "总数知道了，求被藏起来的一部分，用减法。",
-      answer,
-      mode: pick(["input", "choice", "drag"]),
-      options: uniqueOptions(answer),
-      hint: `${total} - ${outside} = ${answer}，盒子里藏着 ${answer} 根。`,
-      visual: { type: "sticks", tens: Math.floor(total / 10), ones: total % 10 },
-      medalText: "藏"
-    });
-  }
-
-  function makeNumberReasoningQuestion() {
-    const kind = pick(["sameDigit", "sumDigits", "nearTen", "swapDiff"]);
-    if (kind === "sameDigit") {
-      const digit = rand(2, 9);
-      const answer = digit * 11;
-      return makeQuestion({
-        label: "数位推理",
-        title: `一个两位数，个位和十位都是 ${digit}，这个数是多少？`,
-        prompt: "十位上的数表示几个十，个位上的数表示几个一。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `${digit} 个十是 ${digit * 10}，再加 ${digit} 个一，就是 ${answer}。`,
-        visual: { type: "money", tens: digit, ones: digit },
-        medalText: "位"
-      });
-    }
-    if (kind === "sumDigits") {
-      const sum = rand(5, 12);
-      const tens = Math.min(9, sum - 1);
-      const ones = sum - tens;
-      const answer = tens * 10 + ones;
-      return makeQuestion({
-        label: "数位推理",
-        title: `个位和十位上的数字和是 ${sum}，这样的两位数最大是多少？`,
-        prompt: "要让两位数最大，就先让十位尽量大。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `十位最大可以是 ${tens}，个位是 ${ones}，所以最大是 ${answer}。`,
-        visual: { type: "equation", parts: ["十位", "+", "个位", "=", sum] },
-        medalText: "位"
-      });
-    }
-    if (kind === "nearTen") {
-      const number = rand(31, 89);
-      const lower = Math.floor(number / 10) * 10;
-      const upper = lower + 10;
-      const answer = number - lower <= upper - number ? lower : upper;
-      return makeQuestion({
-        label: "数位推理",
-        title: `${number} 最接近哪个整十数？`,
-        prompt: "比较它离前一个整十数和后一个整十数哪个更近。",
-        answer,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(answer),
-        hint: `${number} 离 ${lower} 是 ${number - lower}，离 ${upper} 是 ${upper - number}，所以最接近 ${answer}。`,
-        visual: { type: "number-line", start: lower, steps: [`到 ${number}`, `到 ${upper}`], end: "?" },
-        medalText: "近"
-      });
-    }
-    const tens = rand(5, 9);
-    const ones = rand(1, tens - 1);
-    const big = tens * 10 + ones;
-    const small = ones * 10 + tens;
-    const answer = big - small;
-    return makeQuestion({
-      label: "数位推理",
-      title: `${big} 和 ${small} 这两个数相差多少？`,
-      prompt: "先看哪个数大，再用大数减小数。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint: `${big} - ${small} = ${answer}，所以相差 ${answer}。`,
-      visual: { type: "compare", left: big, right: small },
-      medalText: "差"
-    });
-  }
-
-  function makeDifferenceWordQuestion() {
-    const base = rand(18, 65);
-    const diff = rand(5, Math.min(28, 99 - base));
-    const larger = base + diff;
-    const kind = pick(["more", "less", "exceed"]);
-    if (kind === "more") {
-      return makeQuestion({
-        label: "相差应用",
-        title: `小华有 ${base} 张贴纸，小丁比小华多 ${diff} 张，小丁有多少张？`,
-        prompt: "比一个数多几，就用加法。",
-        answer: larger,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(larger),
-        hint: `${base} + ${diff} = ${larger}。`,
-        visual: { type: "story", icon: "贴" },
-        medalText: "差"
-      });
-    }
-    if (kind === "less") {
-      return makeQuestion({
-        label: "相差应用",
-        title: `小华有 ${larger} 张贴纸，小丁比小华少 ${diff} 张，小丁有多少张？`,
-        prompt: "比一个数少几，就用减法。",
-        answer: base,
-        mode: pick(["input", "choice"]),
-        options: uniqueOptions(base),
-        hint: `${larger} - ${diff} = ${base}。`,
-        visual: { type: "story", icon: "贴" },
-        medalText: "差"
-      });
-    }
-    const first = rand(9, 45);
-    const second = rand(5, first - 1);
-    const answer = first - second + 1;
-    return makeQuestion({
-      label: "相差应用",
-      title: `东东折了 ${first} 架纸飞机，明明折了 ${second} 架。明明至少还要折几架才能超过东东？`,
-      prompt: "先追到一样多，再多1个才叫超过。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer, 0, 50),
-      hint: `${first} - ${second} = ${first - second}，超过还要多 1，所以是 ${answer}。`,
-      visual: { type: "story", icon: "飞" },
-      medalText: "超"
-    });
-  }
-
-  function makeWordProblem() {
-    const templates = [
-      () => {
-        const total = pick([12, 13, 14, 16, 18]);
-        const part = rand(3, total - 5);
-        return [`一共有 ${total} 个手工作品，已经贴好 ${part} 个，还剩几个没贴？`, total - part, `求还剩，用 ${total} - ${part} = ${total - part}。`, "贴"];
-      },
-      () => {
-        const total = pick([24, 32, 40, 48]);
-        const each = pick([4, 8]);
-        return [`有 ${total} 箱苹果，每次运 ${each} 箱，需要运几次？`, total / each, `${each} + ${each} + ... 合成 ${total}，一共 ${total / each} 次。`, "果"];
-      },
-      () => {
-        const total = rand(30, 80);
-        const moved = rand(6, 20);
-        return [`货车上原来有 ${total} 箱，运走 ${moved} 箱，还剩多少箱？`, total - moved, `求还剩，用 ${total} - ${moved} = ${total - moved}。`, "车"];
-      },
-      () => {
-        const together = rand(18, 40);
-        const one = rand(5, together - 8);
-        return [`操场上一共有 ${together} 个小朋友，玩跳绳的有 ${one} 人，玩轮滑的有几人？`, together - one, `一共减去其中一部分：${together} - ${one} = ${together - one}。`, "玩"];
-      }
-    ];
-    const [title, answer, hint, medalText] = pick(templates)();
-    return makeQuestion({
-      label: "文字应用",
-      title,
-      prompt: "先圈出总数和已知部分，再想是求一共还是求剩下。",
-      answer,
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(answer),
-      hint,
-      visual: { type: "story", icon: medalText },
-      medalText
-    });
-  }
-
-  function makeShapeQuestion() {
-    const shapes = [
-      ["长方形", rand(2, 5)],
-      ["正方形", rand(1, 4)],
-      ["圆形", rand(2, 6)],
-      ["三角形", rand(1, 4)]
-    ];
-    const target = pick(shapes);
-    return makeQuestion({
-      label: "图形统计",
-      title: `数一数：${target[0]}有几个？`,
-      prompt: "先按形状分类，再数目标图形的个数。",
-      answer: target[1],
-      mode: pick(["input", "choice"]),
-      options: uniqueOptions(target[1], 0, 8),
-      hint: `${target[0]}一共有 ${target[1]} 个。`,
-      visual: { type: "shapes", shapes },
-      medalText: "形"
-    });
-  }
-
-  function makeMixedQuestion() {
-    return pick([
-      makeCompareQuestion,
-      makeInequalityBlankQuestion,
-      makeEquationBlankQuestion,
-      makeTrueFalseQuestion,
-      makePatternQuestion,
-      makePlaceValueQuestion,
-      makeHundredChartQuestion,
-      makeHundredChartTwoStepQuestion,
-      makeMoneyQuestion,
-      makePackingQuestion,
-      makeHiddenPartQuestion,
-      makeNumberReasoningQuestion,
-      makeDifferenceWordQuestion,
-      makeWordProblem,
-      makeShapeQuestion
-    ])();
-  }
-
   function generateQuestionSet() {
-    const questions = [];
-    const signatures = new Set();
-    const addQuestion = (factory) => {
-      for (let tries = 0; tries < 20; tries += 1) {
-        const question = factory();
-        const signature = `${question.label}:${question.title}`;
-        if (!signatures.has(signature)) {
-          signatures.add(signature);
-          questions.push(question);
-          return;
-        }
+    const questions = [oral(), mixed("+"), mixed("−"), extremum("max"), extremum("min"), extremum("mixed"),
+      blank("factor"), blank("offset"), compare(), picture(false), picture(true),
+      ...["total", "price", "add", "subtract", "enough", "table"].map(word), extension(extensionCursor++ % 3)];
+    return shuffle(questions).map((q, i) => ({ ...q, id: "q-" + Date.now() + "-" + i }));
+  }
+  function generateMoleQuestionSet(count) {
+    const mixedCount = Math.floor(count / 3), seen = new Set(), result = [];
+    for (let i = 0; i < count; i++) {
+      const op = i < mixedCount ? (i % 2 ? "−" : "+") : "";
+      const pool = [];
+      for (let a = 1; a <= 9; a++) for (let b = 1; b <= 9; b++) {
+        const m = model(a, b, op, op ? rand(1, Math.min(19, op === "+" ? 100 - a * b : a * b)) : 0);
+        if (!seen.has(expression(m))) pool.push(m);
       }
-      questions.push(factory());
-    };
-
-    for (let i = 0; i < BASIC_COUNT; i += 1) addQuestion(makeBasicCalculation);
-    while (questions.length < QUESTION_COUNT) addQuestion(makeMixedQuestion);
-    return shuffle(questions).map((question, index) => ({
-      ...question,
-      id: `q-${Date.now()}-${index}-${Math.floor(Math.random() * 10000)}`
-    }));
-  }
-
-  global.QuietBookQuestionGenerator = {
-    BASIC_COUNT,
-    QUESTION_COUNT,
-    generateQuestionSet,
-    _test: {
-      expressionValue
+      const m = pick(pool);
+      seen.add(expression(m));
+      result.push({ text: expression(m) + " = ?", answer: value(m), math: m });
     }
-  };
-
-  if (typeof module !== "undefined") {
-    module.exports = global.QuietBookQuestionGenerator;
+    return shuffle(result);
   }
+  global.QuietBookQuestionGenerator = {
+    QUESTION_COUNT, BASIC_COUNT, COUNTS, generateQuestionSet, generateMoleQuestionSet,
+    _test: { value, expression, formula, model, uniqueOptions, extremum, word, extension }
+  };
 })(typeof window !== "undefined" ? window : globalThis);
